@@ -89,11 +89,11 @@ int main(void)
 //axon_DAQ();//activate the slow DAQ software (data acquisition), all 16 sensors, ~10ms resolution
 //axon_DAQ_fast();//activate the super fast DAQ, only ADC pin 9, ~1ms resolution
 //}
-	
+
 	/*********ADD YOUR CODE BELOW THIS LINE **********/
 
-	//wait until user pushes button
-	while(!button_pressed());
+	/* //wait until user pushes button */
+	/* while(!button_pressed()); */
 
 	//reset all timers to zero
 	reset_timer0();
@@ -103,9 +103,31 @@ int main(void)
 	reset_timer4();
 	//reset_timer5();
 
+	char str[100];
+	int offst = 0;
+
 	while(1)
 		{
 		control();//uncomment this for your code (and use control.c only to program)
+
+		str[offst] = uart1GetByte();
+
+		if(str[offst] != 255 && str[offst] != -1)
+		{
+		  if(str[offst] == 13)
+		  {
+		    for(int i = 0; i < offst + 1; ++i)
+		      uart1SendByte(str[i]);
+		    rprintf("\r\n");
+		    offst = 0;
+		  } else
+		  {
+		    if(offst > 90)
+		      offst=0;
+		    else
+		      offst++;
+		  }
+		}
 
 		//servo_controller();
 
@@ -166,7 +188,7 @@ PWM_timer3_Set_E5(1);
 PWM_timer4_Set_H3(1);
 PWM_timer4_Set_H4(1);
 PWM_timer4_Set_H5(1);
-delay_ms(1000); 
+delay_ms(1000);
 
 rprintf("Setting PWM to 50%% duty cycle\r\n");
 PWM_timer1_Set_LED(127);
@@ -177,7 +199,7 @@ PWM_timer3_Set_E5(127);
 PWM_timer4_Set_H3(127);
 PWM_timer4_Set_H4(127);
 PWM_timer4_Set_H5(127);
-delay_ms(1000); 
+delay_ms(1000);
 
 rprintf("Setting PWM to 99%% duty cycle\r\n");
 PWM_timer1_Set_LED(254);
