@@ -36,10 +36,10 @@ int main(void)
 	/****************INITIALIZATIONS*******************/
 	//other stuff Im experimenting with for SoR
 	uartInit();  // initialize the UART (serial port)
-    uartSetBaudRate(0, 38400); // set UARTE speed, for Bluetooth
-    uartSetBaudRate(1, 115200); // set UARTD speed, for USB connection, up to 500k, try 115200 if it doesn't work
-    uartSetBaudRate(2, 38400); // set UARTH speed
-    uartSetBaudRate(3, 38400); // set UARTJ speed, for Blackfin
+	uartSetBaudRate(0, 38400); // set UARTE speed, for Bluetooth
+	uartSetBaudRate(1, 115200); // set UARTD speed, for USB connection, up to 500k, try 115200 if it doesn't work
+	uartSetBaudRate(2, 38400); // set UARTH speed
+	uartSetBaudRate(3, 38400); // set UARTJ speed, for Blackfin
 	//G=Ground, T=Tx (connect to external Rx), R=Rx (connect to external Tx)
 
 	rprintfInit(uart1SendByte);// initialize rprintf system and configure uart1 (USB) for rprintf
@@ -56,6 +56,7 @@ int main(void)
  	init_timer2(TIMER2_CLK_64);
  	init_timer3(TIMER_CLK_64);
  	init_timer4(TIMER_CLK_64);
+	init_timer5(TIMER_CLK_1024);
 	//timer5Init();
 
 	a2dInit(); // initialize analog to digital converter (ADC)
@@ -103,32 +104,9 @@ int main(void)
 	reset_timer4();
 	//reset_timer5();
 
-	char str[100];
-	int offst = 0;
-
 	while(1)
 		{
 		control();//uncomment this for your code (and use control.c only to program)
-
-		str[offst] = uart1GetByte();
-
-		if(str[offst] != 255 && str[offst] != -1)
-		{
-		  if(str[offst] == 13)
-		  {
-		    for(int i = 0; i < offst + 1; ++i)
-		      uart1SendByte(str[i]);
-		    rprintf("\r\n");
-		    offst = 0;
-		  } else
-		  {
-		    if(offst > 90)
-		      offst=0;
-		    else
-		      offst++;
-		  }
-		}
-
 		//servo_controller();
 
 //below is various test code for Admin

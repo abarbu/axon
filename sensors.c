@@ -42,12 +42,12 @@ int sharp_IR_interpret_GP2Y0A21YK(int value)
 	{
 	return 739.38*pow(value,-.8105);
 	}
-//Sharp GP2D120 IR Range Sensor - 4 to 30 cm 
+//Sharp GP2D120 IR Range Sensor - 4 to 30 cm
 int sharp_IR_interpret_GP2D120(int value)
 	{
 	return 509.88*pow(value,-.9154);
 	}
-//Sharp GP2D15 IR Range Sensor - 10cm to 80cm  
+//Sharp GP2D15 IR Range Sensor - 10cm to 80cm
 int sharp_IR_interpret_GP2D15(int value)
 	{
 	return 736.21*pow(value,-.7922);
@@ -105,31 +105,52 @@ int sonar_MaxSonar(int value)
 //http://www.societyofrobots.com/robotforum/index.php?topic=5123.msg40008
 //http://www.societyofrobots.com/robotforum/index.php?topic=4656.30
 //uses timer0
-int sonar_Ping(void)
-	{
-	#define PINGPIN    3          // assign a pin to the Ping Sensor
-	#define DDR        DDRA
-	#define PORT       PORTA
-	#define PIN        PINA
+int sonar_Ping()
+{
+#define PINGPIN    3          // assign a pin to the Ping Sensor
+#define DDR        DDRA
+#define PORT       PORTA
+#define PIN        PINA
 
-	PORT_ON(DDR, PINGPIN);   // Switch PingPin to OUPUT
-	// ------Trigger Pulse--------------
-	PORT_OFF(PORT, PINGPIN);   // Bring PingPin low before starting trigger pulse
-	delay_us(2);        //  Wait for 2 microseconds
-	PORT_ON(PORT, PINGPIN);    // Bring PingPin High for 5us according to spec sheet.
-	delay_us(5);       // Wait for 5 microseconds
-	PORT_OFF(PORT, PINGPIN);; //  Bring PingPin Low and standby
-	//--------End Trigger Pulse---------------------
-	FLIP_PORT(DDR, PINGPIN);   // Switch PingPin to INPUT
-	loop_until_bit_is_set(PIN, PINGPIN);     // Loop until the the PingPin goes high  (macro found in sfr_def.h)
-	//clears timer, reset overflow counter
-	reset_timer0();       //reset timer 0
-	loop_until_bit_is_clear(PIN, PINGPIN);     // Loop until the the PingPin goes low  (macro found in sfr_def.h)
-	//read timer0's overflow counter
-	//255 is count before overflow, dependent on clock
-	
-	return (get_timer0_overflow()*255+TCNT0) * 2.068965517;//elapsed time x conversion
-	}
+  PORT_ON(DDR, PINGPIN);   // Switch PingPin to OUPUT
+  // ------Trigger Pulse--------------
+  PORT_OFF(PORT, PINGPIN);   // Bring PingPin low before starting trigger pulse
+  delay_us(2);        //  Wait for 2 microseconds
+  PORT_ON(PORT, PINGPIN);    // Bring PingPin High for 5us according to spec sheet.
+  delay_us(5);       // Wait for 5 microseconds
+  PORT_OFF(PORT, PINGPIN);; //  Bring PingPin Low and standby
+  //--------End Trigger Pulse---------------------
+  FLIP_PORT(DDR, PINGPIN);   // Switch PingPin to INPUT
+  loop_until_bit_is_set(PIN, PINGPIN);     // Loop until the the PingPin goes high  (macro found in sfr_def.h)
+  //clears timer, reset overflow counter
+  reset_timer0();       //reset timer 0
+  loop_until_bit_is_clear(PIN, PINGPIN);     // Loop until the the PingPin goes low  (macro found in sfr_def.h)
+  //read timer0's overflow counter
+  //255 is count before overflow, dependent on clock
+
+  return (get_timer0_overflow()*255+TCNT0) * 2.068965517;//elapsed time x conversion
+}
+
+/* int sonar_Ping(int PIN, int PORT, int DDR, int PINGPIN) */
+/* { */
+/*   PORT_ON(DDR, PINGPIN);   // Switch PingPin to OUPUT */
+/*   // ------Trigger Pulse-------------- */
+/*   PORT_OFF(PORT, PINGPIN);   // Bring PingPin low before starting trigger pulse */
+/*   delay_us(2);        //  Wait for 2 microseconds */
+/*   PORT_ON(PORT, PINGPIN);    // Bring PingPin High for 5us according to spec sheet. */
+/*   delay_us(5);       // Wait for 5 microseconds */
+/*   PORT_OFF(PORT, PINGPIN);; //  Bring PingPin Low and standby */
+/*   //--------End Trigger Pulse--------------------- */
+/*   FLIP_PORT(DDR, PINGPIN);   // Switch PingPin to INPUT */
+/*   loop_until_bit_is_set(PIN, PINGPIN);     // Loop until the the PingPin goes high  (macro found in sfr_def.h) */
+/*   //clears timer, reset overflow counter */
+/*   reset_timer0();       //reset timer 0 */
+/*   loop_until_bit_is_clear(PIN, PINGPIN);     // Loop until the the PingPin goes low  (macro found in sfr_def.h) */
+/*   //read timer0's overflow counter */
+/*   //255 is count before overflow, dependent on clock */
+
+/*   return (get_timer0_overflow()*255+TCNT0) * 2.068965517;//elapsed time x conversion */
+/* } */
 
 /*****************Phidgets****************/
 //equations were taken from here and not independently verified:
