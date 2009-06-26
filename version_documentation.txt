@@ -1,12 +1,17 @@
 http://www.societyofrobots.com/axon
 
 
+v1.06 February 19th, 2009
+added more features for axon_DAQ.c
+yerbie entirely rewrote timer640.c and timer640.h, hopefully fixes timer bug!
+timer commands like reset_timer_0() and been changed to reset_timer0()
 
-v1.05
+
+v1.05 January, 2009
 timer 3 and 4 fixed, hopefully
 
 
-v1.04
+v1.04 January, 2009
 fixed a small error and sped up start-up time, Axon.c
 startup process rearranged better in Axon.c
 temporarily commented out timer4Init() and timer3Init() - seems to cause reset issue with WinAVR20081205

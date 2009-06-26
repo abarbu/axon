@@ -27,7 +27,7 @@ void test_code(void);
 //photovore is just a default sample program and can be deleted
 void control(void)
 	{
-	/* photovore();//run photovore algorithm, or comment out for your own code */
+	  // photovore();//run photovore algorithm, or comment out for your own code
 
 
 
@@ -37,7 +37,9 @@ void control(void)
 
 
 
-	//axon_DAQ();//activate the DAQ software (data acquisition)
+
+
+
 	}
 
 void update_sensors(void)

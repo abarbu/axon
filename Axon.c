@@ -18,7 +18,7 @@
 //#include "CMUcam.c" //not yet written
 #include "sensors.c" //sensor libraries for sonar, sharp IR, etc.
 #include "misc.c" //includes libraries for various hardware and other useful stuff
-//#include "axon_DAQ.c" //use the Axon like a data acquisition device
+#include "axon_DAQ.c" //use the Axon like a data acquisition device
 //#include "Blackfin_Axon.c" //files for Blackfin Robot camera
 #include "control.c" //your code goes in here
 //#include "servo_controller.c" //Axon servo controller
@@ -37,7 +37,7 @@ int main(void)
 	//other stuff Im experimenting with for SoR
 	uartInit();  // initialize the UART (serial port)
     uartSetBaudRate(0, 38400); // set UARTE speed, for Bluetooth
-    uartSetBaudRate(1, 115200); // set UARTD speed, for USB connection
+    uartSetBaudRate(1, 115200); // set UARTD speed, for USB connection, up to 500k, try 115200 if it doesn't work
     uartSetBaudRate(2, 38400); // set UARTH speed
     uartSetBaudRate(3, 38400); // set UARTJ speed, for Blackfin
 	//G=Ground, T=Tx (connect to external Rx), R=Rx (connect to external Tx)
@@ -51,11 +51,11 @@ int main(void)
 	rprintf("\r\nSystem Warming Up");
 
 	// initialize the timer system (comment out ones you don't want)
-	timer0Init();
-	timer1Init();
-	timer2Init();
-	timer3Init();
-	timer4Init();
+ 	init_timer0(TIMER_CLK_1024);
+ 	init_timer1(TIMER_CLK_64);
+ 	init_timer2(TIMER2_CLK_64);
+ 	init_timer3(TIMER_CLK_64);
+ 	init_timer4(TIMER_CLK_64);
 	//timer5Init();
 
 	a2dInit(); // initialize analog to digital converter (ADC)
@@ -71,6 +71,9 @@ int main(void)
 		}
 
 	LED_off();
+
+	rprintf("Initialization Complete \r\n");
+
 	/**************************************************/
 
 //test programs
@@ -78,22 +81,27 @@ int main(void)
 //{
 //test_oscope();
 //test();
+//while(!button_pressed());
+
+//PWM_Init_timer3_E3(8);
+//PWM_timer3_On_E3();
+//PWM_timer3_Set_E3(30);
+//axon_DAQ();//activate the slow DAQ software (data acquisition), all 16 sensors, ~10ms resolution
+//axon_DAQ_fast();//activate the super fast DAQ, only ADC pin 9, ~1ms resolution
 //}
 	
 	/*********ADD YOUR CODE BELOW THIS LINE **********/
 
-	rprintf("Initialization Complete \r\n");
-
 	//wait until user pushes button
-	//while(!button_pressed());
+	while(!button_pressed());
 
 	//reset all timers to zero
-	reset_timer_0();
-	reset_timer_1();
-	reset_timer_2();
-	reset_timer_3();
-	reset_timer_4();
-	//reset_timer_5();
+	reset_timer0();
+	reset_timer1();
+	reset_timer2();
+	reset_timer3();
+	reset_timer4();
+	//reset_timer5();
 
 	while(1)
 		{

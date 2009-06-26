@@ -123,12 +123,12 @@ int sonar_Ping(void)
 	FLIP_PORT(DDR, PINGPIN);   // Switch PingPin to INPUT
 	loop_until_bit_is_set(PIN, PINGPIN);     // Loop until the the PingPin goes high  (macro found in sfr_def.h)
 	//clears timer, reset overflow counter
-	reset_timer_0();       //reset timer 0
+	reset_timer0();       //reset timer 0
 	loop_until_bit_is_clear(PIN, PINGPIN);     // Loop until the the PingPin goes low  (macro found in sfr_def.h)
 	//read timer0's overflow counter
 	//255 is count before overflow, dependent on clock
 	
-	return (timer0GetOverflowCount()*255+TCNT0) * 2.068965517;//elapsed time x conversion
+	return (get_timer0_overflow()*255+TCNT0) * 2.068965517;//elapsed time x conversion
 	}
 
 /*****************Phidgets****************/

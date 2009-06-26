@@ -20,7 +20,7 @@ void axon_DAQ(void)
 	int a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15;
 
 	//select speed/accuracy of data conversion
-	a2dSetPrescaler(ADC_PRESCALE_DIV32); // configure ADC scaling
+	a2dSetPrescaler(ADC_PRESCALE_DIV32); // configure ADC scaling, 32 default
 
 	// A2D clock prescaler select
 	//		*selects how much the CPU clock frequency is divided
@@ -38,7 +38,7 @@ void axon_DAQ(void)
 	while(1)
 		{
 		//clear timer
-		reset_timer_2();
+		reset_timer2();
 
 		//if you don't require high speed data collection,
 		//add a delay here to slow it down
@@ -64,7 +64,25 @@ void axon_DAQ(void)
 		a15=a2dConvert8bit(15);
 
 		//report data, add time stamp and overflow count at end of data
-		rprintf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\r\n",a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,(timer2GetOverflowCount()*255+TCNT2));
+		rprintf("%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\r\n",a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,get_timer2_counter());
+		}
+	}
+
+void axon_DAQ_fast(void)
+	{
+	int a9;
+
+	//select speed/accuracy of data conversion
+	a2dSetPrescaler(ADC_PRESCALE_DIV4); // configure ADC scaling
+
+	while(1)
+		{
+		//gather data
+		a9=a2dConvert8bit(9);
+
+		//report data, add time stamp and overflow count at end of data
+		rprintf("%d\r\n",a9);
+		//uart2SendByte(m2);//even faster, but doesn't have carriage return
 		}
 	}
 

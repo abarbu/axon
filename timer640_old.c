@@ -30,6 +30,11 @@
 //
 //*****************************************************************************
 
+/*
+Two 8-bit Timer/Counters with Separate Prescaler and Compare Mode
+Four 16-bit Timer/Counter with Separate Prescaler, Compare- and Capture Mode
+*/
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
@@ -37,6 +42,7 @@
 
 #include "global.h"
 #include "timer640.h"
+#include "rprintf.h"
 
 // Program ROM constants
 // the prescale division values stored in order of timer control register index
@@ -311,9 +317,11 @@ void timerPause(unsigned short pause_ms)
 	{
 		if( TimerPauseReg < (pause>>8));
 		{
+//rprintf("sleep2");
 			// save power by idling the processor
 			set_sleep_mode(SLEEP_MODE_IDLE);
 			sleep_mode();
+//rprintf("sleep3");
 		}
 	}
 }
@@ -404,63 +412,67 @@ long timer5GetOverflowCount(void)
 }
 #endif
 
+
+
+
+
+
+
+
 /*
 ATmega640: Four 8-bit PWM Channels, Six/Twelve PWM
 Channels with Programmable Resolution from 2 to 16 Bits
+
 
 PWM pins on Axon:
 OC0A  B7 (not connected)
 OC0B  G5 (attached to button)
 OC1A  B5 (not connected)
-OC1B  B6 (attached to green LED) timer2
+OC1B  B6 (attached to green LED)
 OC1C  B7 (not connected)
 OC2A  B4 (not connected)
-OC2B  H6 timer2
-OC3A  E3 timer3
-OC3B  E4 timer3
-OC3C  E5 timer3
-OC4A  H3 timer0
-OC4B  H4 timer0
-OC4C  H5 timer0
+OC2B  H6
+OC3A  E3
+OC3B  E4
+OC3C  E5
+OC4A  H3
+OC4B  H4
+OC4C  H5
 OC5A  L3 (not connected)
 OC5B  L4 (not connected)
 OC5C  L5 (not connected)
+
+explainations/examples:
+http://www.societyofrobots.com/robotforum/index.php?topic=1827.0
+http://www.societyofrobots.com/robotforum/index.php?topic=5590.0
+
+If you use this, then you cannot use the associated timers for other things.
+H6 	 uses timer2
+E3-5 uses timer3
+H3-5 uses timer4
+Unfortunately, the 3 pins that use timer5 are not connected on the Axon board, so they are
+not available for PWM. The upside is that timer5 is available for other use without interference.
+
+OCR is the PWM on from 0, while ICR is the total PWM length
+
+|----|___________________
+  OCR
+  		  ICR
+
+to calculate PWM: (desired ICR time, seconds)*(clock frequency, 1/seconds)/prescaler = TOP
+TOP=TOP/2 if using phase and frequency correct mode
+
+adjust the duty cycle of the output pin by setting OCR1A to a value between 0 and ICR1
+
+PWM tutorial: http://www.societyofrobots.com/member_tutorials/node/228
 */
 
-void timer0PWMInit(u08 bitRes)
+//tested and working: H3, H6
+
+//OC1B  pin B6 (attached to green LED)
+void PWM_Init_timer1_LED(u08 bitRes)
 {
-	// configures timer0 for use with PWM output
-	// on OC0A and OC0B pins
-
-	// enable timer0 as 8,9,10bit PWM
-	if(bitRes == 9)
-	{	// 9bit mode
-		sbi(TCCR0A,PWM11);
-		cbi(TCCR0A,PWM10);
-	}
-	else if( bitRes == 10 )
-	{	// 10bit mode
-		sbi(TCCR0A,PWM11);
-		sbi(TCCR0A,PWM10);
-	}
-	else
-	{	// default 8bit mode
-		cbi(TCCR0A,PWM11);
-		sbi(TCCR0A,PWM10);
-	}
-
-	// clear output compare values
-	OCR4A = 0;
-	OCR4B = 0;
-	OCR4C = 0;
-}
-
-void timer1PWMInit(u08 bitRes)
-{
-	// configures timer1 for use with PWM output
-	// on OC1A and OC1B pins
-
-	// enable timer1 as 8,9,10bit PWM
+	// enable timer2 as 8,9,10bit PWM
 	if(bitRes == 9)
 	{	// 9bit mode
 		sbi(TCCR1A,PWM11);
@@ -476,19 +488,12 @@ void timer1PWMInit(u08 bitRes)
 		cbi(TCCR1A,PWM11);
 		sbi(TCCR1A,PWM10);
 	}
-
 	// clear output compare values
-	OCR1A = 0;
 	OCR1B = 0;
-	OCR1C = 0;
 }
-
-//works on pin H6
-void timer2PWMInit(u08 bitRes)
+//pin H6, timer2
+void PWM_Init_timer2_H6(u08 bitRes)
 {
-	// configures timer2 for use with PWM output
-	// on OC2A and OC2B pins
-
 	// enable timer2 as 8,9,10bit PWM
 	if(bitRes == 9)
 	{	// 9bit mode
@@ -505,10 +510,146 @@ void timer2PWMInit(u08 bitRes)
 		cbi(TCCR2A,PWM11);
 		sbi(TCCR2A,PWM10);
 	}
-
 	// clear output compare values
-	OCR1B = 0;
 	OCR2B = 0;
+}
+//pin E3
+void PWM_Init_timer3_E3(u08 bitRes)
+{
+	// enable timer3 as 8,9,10bit PWM
+	if(bitRes == 9)
+	{	// 9bit mode
+		sbi(TCCR3A,PWM11);
+		cbi(TCCR3A,PWM10);
+	}
+	else if( bitRes == 10 )
+	{	// 10bit mode
+		sbi(TCCR3A,PWM11);
+		sbi(TCCR3A,PWM10);
+	}
+	else
+	{	// default 8bit mode
+		cbi(TCCR3A,PWM11);
+		sbi(TCCR3A,PWM10);
+	}
+	// clear output compare values
+	OCR3A = 0;
+	//timer3PWMInitICR(20000);// 20mS PWM cycle time for RC servos
+}
+//pin E4
+void PWM_Init_timer3_E4(u08 bitRes)
+{
+	// enable timer3 as 8,9,10bit PWM
+	if(bitRes == 9)
+	{	// 9bit mode
+		sbi(TCCR3B,PWM11);
+		cbi(TCCR3B,PWM10);
+	}
+	else if( bitRes == 10 )
+	{	// 10bit mode
+		sbi(TCCR3B,PWM11);
+		sbi(TCCR3B,PWM10);
+	}
+	else
+	{	// default 8bit mode
+		cbi(TCCR3B,PWM11);
+		sbi(TCCR3B,PWM10);
+	}
+	// clear output compare values
+	OCR3B = 0;
+	//timer3PWMInitICR(20000);// 20mS PWM cycle time for RC servos
+}
+//pin E5
+void PWM_Init_timer3_E5(u08 bitRes)
+{
+	// enable timer3 as 8,9,10bit PWM
+	if(bitRes == 9)
+	{	// 9bit mode
+		sbi(TCCR3C,PWM11);
+		cbi(TCCR3C,PWM10);
+	}
+	else if( bitRes == 10 )
+	{	// 10bit mode
+		sbi(TCCR3C,PWM11);
+		sbi(TCCR3C,PWM10);
+	}
+	else
+	{	// default 8bit mode
+		cbi(TCCR3C,PWM11);
+		sbi(TCCR3C,PWM10);
+	}
+	// clear output compare values
+	OCR3C = 0;
+	//timer3PWMInitICR(20000);// 20mS PWM cycle time for RC servos
+}
+//pin H3, timer4
+void PWM_Init_timer4_H3(u08 bitRes)
+{
+	// enable timer4 as 8,9,10bit PWM
+	if(bitRes == 9)
+	{	// 9bit mode
+		sbi(TCCR4A,PWM11);
+		cbi(TCCR4A,PWM10);
+	}
+	else if( bitRes == 10 )
+	{	// 10bit mode
+		sbi(TCCR4A,PWM11);
+		sbi(TCCR4A,PWM10);
+	}
+	else
+	{	// default 8bit mode
+		cbi(TCCR4A,PWM11);
+		sbi(TCCR4A,PWM10);
+	}
+	// clear output compare values
+	OCR4A = 0;
+	//timer4PWMInitICR(20000);// 20mS PWM cycle time for RC servos
+}
+//pin H4, timer4
+void PWM_Init_timer4_H4(u08 bitRes)
+{
+	// enable timer4 as 8,9,10bit PWM
+	if(bitRes == 9)
+	{	// 9bit mode
+		sbi(TCCR4B,PWM11);
+		cbi(TCCR4B,PWM10);
+	}
+	else if( bitRes == 10 )
+	{	// 10bit mode
+		sbi(TCCR4B,PWM11);
+		sbi(TCCR4B,PWM10);
+	}
+	else
+	{	// default 8bit mode
+		cbi(TCCR4B,PWM11);
+		sbi(TCCR4B,PWM10);
+	}
+	// clear output compare values
+	OCR4B = 0;
+	//timer4PWMInitICR(20000);// 20mS PWM cycle time for RC servos
+}
+//pin H5, timer4
+void PWM_Init_timer4_H5(u08 bitRes)
+{
+	// enable timer4 as 8,9,10bit PWM
+	if(bitRes == 9)
+	{	// 9bit mode
+		sbi(TCCR4A,PWM11);
+		cbi(TCCR4A,PWM10);
+	}
+	else if( bitRes == 10 )
+	{	// 10bit mode
+		sbi(TCCR4A,PWM11);
+		sbi(TCCR4A,PWM10);
+	}
+	else
+	{	// default 8bit mode
+		cbi(TCCR4A,PWM11);
+		sbi(TCCR4A,PWM10);
+	}
+	// clear output compare values
+	OCR4C = 0;
+	//timer4PWMInitICR(20000);// 20mS PWM cycle time for RC servos
 }
 
 #ifdef WGM10
@@ -529,7 +670,6 @@ void timer1PWMInitICR(u16 topcount)
 	OCR1A = 0;
 	OCR1B = 0;
 	OCR1C = 0;
-
 }
 void timer3PWMInitICR(u16 topcount)
 {
@@ -546,7 +686,6 @@ void timer3PWMInitICR(u16 topcount)
 	OCR3A = 0;
 	OCR3B = 0;
 	OCR3C = 0;
-
 }
 void timer4PWMInitICR(u16 topcount)
 {
@@ -563,285 +702,168 @@ void timer4PWMInitICR(u16 topcount)
 	OCR4A = 0;
 	OCR4B = 0;
 	OCR4C = 0;
-
-}
-void timer5PWMInitICR(u16 topcount)
-{
-	// set PWM mode with ICR top-count
-	cbi(TCCR5A,WGM10);
-	sbi(TCCR5A,WGM11);
-	sbi(TCCR5B,WGM12);
-	sbi(TCCR5B,WGM13);
-	
-	// set top count value
-	ICR5 = topcount;
-	
-	// clear output compare values
-	OCR5A = 0;
-	OCR5B = 0;
-	OCR5C = 0;
-
 }
 #endif
 
-void timer0PWMOff(void)
+//on commands
+void PWM_timer1_On_LED(void)
 {
-	// turn off timer0 PWM mode
-	cbi(TCCR0A,PWM11);
-	cbi(TCCR0A,PWM10);
-	// set PWM0A/B (OutputCompare action) to none
-	timer0PWMAOff();
-	timer0PWMBOff();
-	timer0PWMCOff();
-}
-void timer1PWMOff(void)
-{
-	// turn off timer1 PWM mode
-	cbi(TCCR1A,PWM11);
-	cbi(TCCR1A,PWM10);
-	// set PWM1A/B (OutputCompare action) to none
-	timer1PWMAOff();
-	timer1PWMBOff();
-	timer1PWMCOff();
-}
-void timer2PWMOff(void)
-{
-	// turn off timer2 PWM mode
-	cbi(TCCR2A,PWM11);
-	cbi(TCCR2A,PWM10);
-	// set PWM2A/B (OutputCompare action) to none
-	//timer2PWMAOff();
-	timer2PWMBOff();
-	//timer2PWMCOff();
-}
-
-void timer0PWMAOn(void)
-{
-	// turn on channel A (OC0A) PWM output
-	// set OC1A as non-inverted PWM
-	sbi(TCCR0A,COM4A1);
-	cbi(TCCR0A,COM4A0);
-}
-
-void timer1PWMAOn(void)
-{
-	// turn on channel A (OC1A) PWM output
-	// set OC1A as non-inverted PWM
-	sbi(TCCR1A,COM1A1);
-	cbi(TCCR1A,COM1A0);
-}
-
-void timer2PWMAOn(void)
-{
-	// turn on channe2 A (OC2A) PWM output
-	// set OC2A as non-inverted PWM
-	sbi(TCCR2A,COM1A1);
-	cbi(TCCR2A,COM1A0);
-}
-
-void timer0PWMBOn(void)
-{
-	// turn on channel B (OC0B) PWM output
-	// set OC0B as non-inverted PWM
-	sbi(TCCR0A,COM4B1);
-	cbi(TCCR0A,COM4B0);
-}
-
-void timer1PWMBOn(void)
-{
-	// turn on channel B (OC1B) PWM output
-	// set OC1B as non-inverted PWM
 	sbi(TCCR1A,COM1B1);
 	cbi(TCCR1A,COM1B0);
 }
-
-void timer2PWMBOn(void)
+void PWM_timer2_On_H6(void)
 {
-	// turn on channel B (OC2B) PWM output
-	// set OC2B as non-inverted PWM
-	sbi(TCCR2A,COM1B1);
-	cbi(TCCR2A,COM1B0);
+	sbi(TCCR2A,COM2B1);
+	cbi(TCCR2A,COM2B0);
+}
+void PWM_timer3_On_E3(void)
+{
+	sbi(TCCR3A,COM3A1);
+	cbi(TCCR3A,COM3A0);
+}
+void PWM_timer3_On_E4(void)
+{
+	sbi(TCCR3A,COM3B1);
+	cbi(TCCR3A,COM3B0);
+}
+void PWM_timer3_On_E5(void)
+{
+	sbi(TCCR3A,COM3C1);
+	cbi(TCCR3A,COM3C0);
+}
+void PWM_timer4_On_H3(void)
+{
+	sbi(TCCR4A,COM4A1);
+	cbi(TCCR4A,COM4A0);
+}
+void PWM_timer4_On_H4(void)
+{
+	sbi(TCCR4A,COM4B1);
+	cbi(TCCR4A,COM4B0);
+}
+void PWM_timer4_On_H5(void)
+{
+	sbi(TCCR4A,COM4C1);
+	cbi(TCCR4A,COM4C0);
 }
 
-void timer0PWMCOn(void)
+//off commands
+void PWM_timer1_Off_LED(void)
 {
-	// turn on channel B (OC0B) PWM output
-	// set OC0B as non-inverted PWM
-	sbi(TCCR0A,COM4C1);
-	cbi(TCCR0A,COM4C0);
-}
-
-void timer1PWMCOn(void)
-{
-	// turn on channel B (OC1B) PWM output
-	// set OC1B as non-inverted PWM
-	sbi(TCCR1A,COM1C1);
-	cbi(TCCR1A,COM1C0);
-}
-
-void timer2PWMCOn(void)
-{
-	// turn on channel B (OC2B) PWM output
-	// set OC2B as non-inverted PWM
-	sbi(TCCR2A,COM1C1);
-	cbi(TCCR2A,COM1C0);
-}
-
-void timer0PWMAOff(void)
-{
-	// turn off channel A (OC0A) PWM output
-	// set OC0A (OutputCompare action) to none
-	cbi(TCCR0A,COM4A1);
-	cbi(TCCR0A,COM4A0);
-}
-
-void timer1PWMAOff(void)
-{
-	// turn off channel A (OC1A) PWM output
-	// set OC1A (OutputCompare action) to none
-	cbi(TCCR1A,COM1A1);
-	cbi(TCCR1A,COM1A0);
-}
-
-void timer2PWMAOff(void)
-{
-	// turn off channel A (OC2A) PWM output
-	// set OC2A (OutputCompare action) to none
-	cbi(TCCR2A,COM1A1);
-	cbi(TCCR2A,COM1A0);
-}
-
-void timer0PWMBOff(void)
-{
-	// turn off channel B (OC0B) PWM output
-	// set OC0B (OutputCompare action) to none
-	cbi(TCCR0A,COM4B1);
-	cbi(TCCR0A,COM4B0);
-}
-
-void timer1PWMBOff(void)
-{
-	// turn off channel B (OC1B) PWM output
-	// set OC1B (OutputCompare action) to none
 	cbi(TCCR1A,COM1B1);
 	cbi(TCCR1A,COM1B0);
 }
-
-void timer2PWMBOff(void)
+void PWM_timer2_Off_H6(void)
 {
-	// turn off channel B (OC2B) PWM output
-	// set OC2B (OutputCompare action) to none
-	cbi(TCCR2A,COM1B1);
-	cbi(TCCR2A,COM1B0);
+	cbi(TCCR2A,COM2B1);
+	cbi(TCCR2A,COM2B0);
+}
+void PWM_timer3_Off_E3(void)
+{
+	cbi(TCCR3A,COM3A1);
+	cbi(TCCR3A,COM3A0);
+}
+void PWM_timer3_Off_E4(void)
+{
+	cbi(TCCR3A,COM3B1);
+	cbi(TCCR3A,COM3B0);
+}
+void PWM_timer3_Off_E5(void)
+{
+	cbi(TCCR3A,COM3C1);
+	cbi(TCCR3A,COM3C0);
+}
+void PWM_timer4_Off_H3(void)
+{
+	cbi(TCCR4A,COM4A1);
+	cbi(TCCR4A,COM4A0);
+}
+void PWM_timer4_Off_H4(void)
+{
+	cbi(TCCR4A,COM4B1);
+	cbi(TCCR4A,COM4B0);
+}
+void PWM_timer4_Off_H5(void)
+{
+	cbi(TCCR4A,COM4C1);
+	cbi(TCCR4A,COM4C0);
 }
 
-void timer0PWMCOff(void)
+
+void PWM_timer1_Off_All(void)
 {
-	// turn off channel B (OC0B) PWM output
-	// set OC0B (OutputCompare action) to none
-	cbi(TCCR0A,COM4C1);
-	cbi(TCCR0A,COM4C0);
+	cbi(TCCR1A,PWM11);
+	cbi(TCCR1A,PWM10);
+	//timer2PWMAOff();
+	PWM_timer1_Off_LED();
+	//timer2PWMCOff();
+}
+void PWM_timer2_Off_All(void)
+{
+	cbi(TCCR2A,PWM11);
+	cbi(TCCR2A,PWM10);
+	//timer2PWMAOff();
+	PWM_timer2_Off_H6();
+	//timer2PWMCOff();
+}
+void PWM_timer3_Off_All(void)
+{
+	cbi(TCCR3A,PWM11);
+	cbi(TCCR3A,PWM10);
+	//timer2PWMAOff();
+	PWM_timer3_Off_E3();
+	PWM_timer3_Off_E4();
+	PWM_timer3_Off_E5();
+	//timer2PWMCOff();
+}
+void PWM_timer4_Off_All(void)
+{
+	cbi(TCCR4A,PWM11);
+	cbi(TCCR4A,PWM10);
+	//timer2PWMAOff();
+	PWM_timer4_Off_H3();
+	PWM_timer4_Off_H4();
+	PWM_timer4_Off_H5();
+	//timer2PWMCOff();
 }
 
-void timer1PWMCOff(void)
-{
-	// turn off channel B (OC1B) PWM output
-	// set OC1B (OutputCompare action) to none
-	cbi(TCCR1A,COM1C1);
-	cbi(TCCR1A,COM1C0);
-}
 
-void timer2PWMCOff(void)
-{
-	// turn off channel B (OC2B) PWM output
-	// set OC2B (OutputCompare action) to none
-	cbi(TCCR2A,COM1C1);
-	cbi(TCCR2A,COM1C0);
-}
+// set PWM (output compare) duty for channel B
+// this PWM output is generated on OC2B pin
+// NOTE:	pwmDuty should be in the range 0-255 for 8bit PWM
+//			pwmDuty should be in the range 0-511 for 9bit PWM
+//			pwmDuty should be in the range 0-1023 for 10bit PWM
+void PWM_timer1_Set_LED(u16 pwmDuty)
+	{OCR1B = pwmDuty;}
+void PWM_timer2_Set_H6(u16 pwmDuty)
+	{OCR2B = pwmDuty;}
+void PWM_timer3_Set_E3(u16 pwmDuty)
+	{OCR3A = pwmDuty;}
+void PWM_timer3_Set_E4(u16 pwmDuty)
+	{OCR3B = pwmDuty;}
+void PWM_timer3_Set_E5(u16 pwmDuty)
+	{OCR3C = pwmDuty;}
+void PWM_timer4_Set_H3(u16 pwmDuty)
+	{OCR4A = pwmDuty;}
+void PWM_timer4_Set_H4(u16 pwmDuty)
+	{OCR4B = pwmDuty;}
+void PWM_timer4_Set_H5(u16 pwmDuty)
+	{OCR4C = pwmDuty;}
 
-void timer0PWMASet(u16 pwmDuty)
-{
-	// set PWM (output compare) duty for channel A
-	// this PWM output is generated on OC0A pin
-	// NOTE:	pwmDuty should be in the range 0-255 for 8bit PWM
-	//			pwmDuty should be in the range 0-511 for 9bit PWM
-	//			pwmDuty should be in the range 0-1023 for 10bit PWM
-	OCR4A = pwmDuty;
-}
 
-void timer1PWMASet(u16 pwmDuty)
-{
-	// set PWM (output compare) duty for channel A
-	// this PWM output is generated on OC1A pin
-	// NOTE:	pwmDuty should be in the range 0-255 for 8bit PWM
-	//			pwmDuty should be in the range 0-511 for 9bit PWM
-	//			pwmDuty should be in the range 0-1023 for 10bit PWM
-	OCR1A = pwmDuty;
-}
 
-void timer2PWMASet(u16 pwmDuty)
-{
-	// set PWM (output compare) duty for channel A
-	// this PWM output is generated on OC2A pin
-	// NOTE:	pwmDuty should be in the range 0-255 for 8bit PWM
-	//			pwmDuty should be in the range 0-511 for 9bit PWM
-	//			pwmDuty should be in the range 0-1023 for 10bit PWM
-	OCR2A = pwmDuty;
-}
 
-void timer0PWMBSet(u16 pwmDuty)
-{
-	// set PWM (output compare) duty for channel B
-	// this PWM output is generated on OC0B pin
-	// NOTE:	pwmDuty should be in the range 0-255 for 8bit PWM
-	//			pwmDuty should be in the range 0-511 for 9bit PWM
-	//			pwmDuty should be in the range 0-1023 for 10bit PWM
-	OCR4B = pwmDuty;
-}
 
-void timer1PWMBSet(u16 pwmDuty)
-{
-	// set PWM (output compare) duty for channel B
-	// this PWM output is generated on OC1B pin
-	// NOTE:	pwmDuty should be in the range 0-255 for 8bit PWM
-	//			pwmDuty should be in the range 0-511 for 9bit PWM
-	//			pwmDuty should be in the range 0-1023 for 10bit PWM
-	OCR1B = pwmDuty;
-}
 
-void timer2PWMBSet(u16 pwmDuty)
-{
-	// set PWM (output compare) duty for channel B
-	// this PWM output is generated on OC2B pin
-	// NOTE:	pwmDuty should be in the range 0-255 for 8bit PWM
-	//			pwmDuty should be in the range 0-511 for 9bit PWM
-	//			pwmDuty should be in the range 0-1023 for 10bit PWM
-	OCR2B = pwmDuty;
-}
 
-void timer0PWMCSet(u16 pwmDuty)
-{
-	// set PWM (output compare) duty for channel B
-	// this PWM output is generated on OC0B pin
-	// NOTE:	pwmDuty should be in the range 0-255 for 8bit PWM
-	//			pwmDuty should be in the range 0-511 for 9bit PWM
-	//			pwmDuty should be in the range 0-1023 for 10bit PWM
-	OCR4C = pwmDuty;
-}
 
-void timer1PWMCSet(u16 pwmDuty)
-{
-	// set PWM (output compare) duty for channel B
-	// this PWM output is generated on OC1B pin
-	// NOTE:	pwmDuty should be in the range 0-255 for 8bit PWM
-	//			pwmDuty should be in the range 0-511 for 9bit PWM
-	//			pwmDuty should be in the range 0-1023 for 10bit PWM
-	OCR1C = pwmDuty;
-}
-
+//INTERRUPTS
+// not sure why, but this interrupt is being called.  I'm not sure what the PD0 pin is hooked up to on the Axon.
+// this is basically the cause of the reset.
+EMPTY_INTERRUPT(INT0_vect);
 
 //! Interrupt handler for tcnt0 overflow interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW0)
+ISR(TIMER0_OVF_vect)
 {
 	Timer0Reg0++;			// increment low-order counter
 
@@ -854,7 +876,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW0)
 }
 
 //! Interrupt handler for tcnt1 overflow interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW1)
+ISR(TIMER1_OVF_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER1OVERFLOW_INT])
@@ -863,7 +885,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW1)
 
 #ifdef TCNT2	// support timer2 only if it exists
 //! Interrupt handler for tcnt2 overflow interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW2)
+ISR(TIMER2_OVF_vect)
 {
 	Timer2Reg0++;			// increment low-order counter
 
@@ -875,7 +897,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW2)
 
 #ifdef TCNT3	// support timer3 only if it exists
 //! Interrupt handler for tcnt3 overflow interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW3)
+ISR(TIMER3_OVF_vect)
 {
 	Timer3Reg0++;			// increment low-order counter
 
@@ -887,7 +909,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW3)
 
 #ifdef TCNT4	// support timer4 only if it exists
 //! Interrupt handler for tcnt4 overflow interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW4)
+ISR(TIMER4_OVF_vect)
 {
 	Timer4Reg0++;			// increment low-order counter
 
@@ -899,7 +921,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW4)
 
 #ifdef TCNT5	// support timer5 only if it exists
 //! Interrupt handler for tcnt5 overflow interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW5)
+ISR(TIMER5_OVF_vect)
 {
 	Timer5Reg0++;			// increment low-order counter
 
@@ -912,16 +934,17 @@ TIMER_INTERRUPT_HANDLER(SIG_OVERFLOW5)
 #ifdef OCR0
 // include support for Output Compare 0 for new AVR processors that support it
 //! Interrupt handler for OutputCompare0 match (OC0) interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE0)
+ISR(TIMER0_COMPA_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER0OUTCOMPARE_INT])
 		TimerIntFunc[TIMER0OUTCOMPARE_INT]();
 }
+
 #endif
 
 //! Interrupt handler for CutputCompare0A match (OC0A) interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE0A)
+ISR(TIMER0_COMPA_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER0OUTCOMPAREA_INT])
@@ -929,7 +952,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE0A)
 }
 
 //! Interrupt handler for CutputCompare1A match (OC1A) interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE1A)
+ISR(TIMER1_COMPA_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER1OUTCOMPAREA_INT])
@@ -937,7 +960,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE1A)
 }
 
 //! Interrupt handler for CutputCompare2A match (OC2A) interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE2A)
+ISR(TIMER2_COMPA_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER2OUTCOMPAREA_INT])
@@ -945,7 +968,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE2A)
 }
 
 //! Interrupt handler for OutputCompare0B match (OC0B) interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE0B)
+ISR(TIMER0_COMPB_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER0OUTCOMPAREB_INT])
@@ -953,7 +976,7 @@ TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE0B)
 }
 
 //! Interrupt handler for OutputCompare1B match (OC1B) interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE1B)
+ISR(TIMER1_COMPB_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER1OUTCOMPAREB_INT])
@@ -961,13 +984,13 @@ TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE1B)
 }
 
 //! Interrupt handler for OutputCompare2B match (OC2B) interrupt
-TIMER_INTERRUPT_HANDLER(SIG_OUTPUT_COMPARE2B)
+ISR(TIMER2_COMPB_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER2OUTCOMPAREB_INT])
 		TimerIntFunc[TIMER2OUTCOMPAREB_INT]();
 }
-
+/*
 //! Interrupt handler for InputCapture0 (IC0) interrupt
 TIMER_INTERRUPT_HANDLER(SIG_INPUT_CAPTURE0)
 {
@@ -975,19 +998,32 @@ TIMER_INTERRUPT_HANDLER(SIG_INPUT_CAPTURE0)
 	if(TimerIntFunc[TIMER0INPUTCAPTURE_INT])
 		TimerIntFunc[TIMER0INPUTCAPTURE_INT]();
 }
-
+*/
 //! Interrupt handler for InputCapture1 (IC1) interrupt
-TIMER_INTERRUPT_HANDLER(SIG_INPUT_CAPTURE1)
+ISR(TIMER1_CAPT_vect)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER1INPUTCAPTURE_INT])
 		TimerIntFunc[TIMER1INPUTCAPTURE_INT]();
 }
-
+/*
 //! Interrupt handler for InputCapture2 (IC2) interrupt
 TIMER_INTERRUPT_HANDLER(SIG_INPUT_CAPTURE2)
 {
 	// if a user function is defined, execute it
 	if(TimerIntFunc[TIMER2INPUTCAPTURE_INT])
 		TimerIntFunc[TIMER2INPUTCAPTURE_INT]();
+}
+*/
+
+ /* need this to capture any unexpected interrupts, this causes the reset.
+  * http://www.gnu.org/savannah-checkouts/non-gnu/avr-libc/user-manual/group__avr__interrupts.html
+  * If an unexpected interrupt occurs (interrupt is enabled and no handler 
+  * is installed, which usually indicates a bug), then the default action is
+  * to reset the device by jumping to the reset vector. You can override this 
+  * by supplying a function named BADISR_vect which should be defined with ISR() 
+  * as such. */
+ISR(BADISR_vect)
+{
+  rprintf("badISR called");
 }

@@ -45,7 +45,7 @@ void Blackfin_Echo(int response_counter) //echos # of characters expected for ea
   	    if (temp != -1)//if data received
 			{
 			rprintf("%c",temp);
-			response[counter]=temp & 0x0F;//store values into an array, &0x0F strips ascii off to use in char strings
+			response[counter]=temp & 0x0F;//store values into an array, &0x0F converts ascii to char
 
 			counter++;
 	  	    if(counter >= response_counter || temp == '\n')

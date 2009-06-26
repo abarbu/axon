@@ -322,33 +322,8 @@ void timer5ClearOverflowCount(void);	///< clear timer4's overflow counter
 long timer5GetOverflowCount(void);		///< read timer4's overflow counter
 #endif
 
-/// @defgroup timerpwm Timer PWM Commands
-/// @ingroup timer
-/// These commands control PWM functionality on timer1
-// PWM initialization and set commands for timer1
-// timer1PWMInit()
-//		configures the timer1 hardware for PWM mode on pins OC1A and OC1B.
-//		bitRes should be 8,9,or 10 for 8,9,or 10bit PWM resolution
-//
-// timer1PWMOff()
-//		turns off all timer1 PWM output and set timer mode to normal state
-//
-// timer1PWMAOn() and timer1PWMBOn()
-//		turn on output of PWM signals to OC1A or OC1B pins
-//		NOTE: Until you define the OC1A and OC1B pins as outputs, and run
-//		this "on" command, no PWM output will be output
-//
-// timer1PWMAOff() and timer1PWMBOff()
-//		turn off output of PWM signals to OC1A or OC1B pins
-//
-// timer1PWMASet() and timer1PWMBSet()
-//		sets the PWM duty cycle for each channel
-//	NOTE:	<pwmDuty> should be in the range 0-255 for 8bit PWM
-//			<pwmDuty> should be in the range 0-511 for 9bit PWM
-//			<pwmDuty> should be in the range 0-1023 for 10bit PWM
-// NOTE: the PWM frequency can be controlled in increments by setting the
-//			prescaler for timer1
-//@{
+
+/*
 
 
 /// Enter standard PWM Mode on timer0.
@@ -404,36 +379,64 @@ void timer1PWMASet(u16 pwmDuty);	///< set duty of timer1 Channel A PWM output
 void timer1PWMBSet(u16 pwmDuty);	///< set duty of timer1 Channel B PWM output
 void timer1PWMCSet(u16 pwmDuty);	///< set duty of timer1 Channel C PWM output
 
+*/
 
-
-/// Enter standard PWM Mode on timer2.
+/// Enter standard PWM Mode
 /// \param bitRes	indicates the period/resolution to use for PWM output in timer bits.
 ///						Must be either 8, 9, or 10 bits corresponding to PWM periods of 256, 512, or 1024 timer tics.
-void timer2PWMInit(u08 bitRes);
+void PWM_Init_timer1_LED(u08 bitRes);
+void PWM_Init_timer2_H6(u08 bitRes);
+void PWM_Init_timer3_E3(u08 bitRes);
+void PWM_Init_timer3_E4(u08 bitRes);
+void PWM_Init_timer3_E5(u08 bitRes);
+void PWM_Init_timer4_H3(u08 bitRes);
+void PWM_Init_timer4_H4(u08 bitRes);
+void PWM_Init_timer4_H5(u08 bitRes);
 
 /// Enter PWM Mode on timer2 with a specific top-count value.
 /// \param topcount	indicates the desired PWM period in timer tics.
 ///						Can be a number between 1 and 65535 (16-bit).
+void timer1PWMInitICR(u16 topcount);
 void timer2PWMInitICR(u16 topcount);
+void timer3PWMInitICR(u16 topcount);
+void timer4PWMInitICR(u16 topcount);
 
-/// Turn off all timer2 PWM output and set timer mode to normal.
-void timer2PWMOff(void);
+/// Turn off all PWM output and set timer mode to normal.
+void PWM_timer1_Off_All(void);
+void PWM_timer2_Off_All(void);
+void PWM_timer3_Off_All(void);
+void PWM_timer4_Off_All(void);
 
-/// Turn on/off timer2 PWM outputs.
-void timer2PWMAOn(void);			///< Turn on timer2 Channel A PWM output
-void timer2PWMBOn(void);			///< Turn on timer2 Channel B PWM output
-void timer2PWMCOn(void);			///< Turn on timer2 Channel C PWM output
-void timer2PWMAOff(void);			///< turn off timer2 Channel A PWM output
-void timer2PWMBOff(void);			///< turn off timer2 Channel B PWM output
-void timer2PWMCOff(void);			///< turn off timer2 Channel C PWM output
+/// Turn on PWM outputs.
+void PWM_timer1_On_LED(void);
+void PWM_timer2_On_H6(void);
+void PWM_timer3_On_E3(void);
+void PWM_timer3_On_E4(void);
+void PWM_timer3_On_E5(void);
+void PWM_timer4_On_H3(void);
+void PWM_timer4_On_H4(void);
+void PWM_timer4_On_H5(void);
 
-void timer2PWMASet(u16 pwmDuty);	///< set duty of timer2 Channel A PWM output
-void timer2PWMBSet(u16 pwmDuty);	///< set duty of timer2 Channel B PWM output
-void timer2PWMCSet(u16 pwmDuty);	///< set duty of timer2 Channel C PWM output
+/// Turn on PWM outputs.
+void PWM_timer1_Off_LED(void);
+void PWM_timer2_Off_H6(void);
+void PWM_timer3_Off_E3(void);
+void PWM_timer3_Off_E4(void);
+void PWM_timer3_Off_E5(void);
+void PWM_timer4_Off_H3(void);
+void PWM_timer4_Off_H4(void);
+void PWM_timer4_Off_H5(void);
 
-//@}
-//@}
+///< set duty of timer2 PWM output
+void PWM_timer1_Set_LED(u16 pwmDuty);
+void PWM_timer2_Set_H6(u16 pwmDuty);
+void PWM_timer3_Set_E3(u16 pwmDuty);
+void PWM_timer3_Set_E4(u16 pwmDuty);
+void PWM_timer3_Set_E5(u16 pwmDuty);
+void PWM_timer4_Set_H3(u16 pwmDuty);
+void PWM_timer4_Set_H4(u16 pwmDuty);
+void PWM_timer4_Set_H5(u16 pwmDuty);	
 
-// Pulse generation commands have been moved to the pulse.c library
+
 
 #endif

@@ -110,7 +110,7 @@ void configure_ports(void)
 	//       ||\________5: 
 	//       |\_________6: 
 	//       \__________7: 
-	//cbi(PORTG, PG5);  // disable pull-up resistor for v1e and earlier
+	//cbi(PORTG, PG5);  // disable pull-up resistor for Axon v1e and earlier
 	sbi(PORTG, PG5);  // enable pull-up resistor for v1f and later
 	cbi(DDRG, PG5);	//PG5 is for the button, make a digital input
 	//note that button actions are inverted between both versions!!!
@@ -161,7 +161,7 @@ void LED_on(void)
 
 
 //**************RESET TIMER**************
-void reset_timer_0(void)
+/*void reset_timer_0(void)
 	{
 	//restart timer count
 	TCNT0=0x00;//clear timer
@@ -197,6 +197,7 @@ void reset_timer_5(void)
 	TCNT5=0x00;//clear timer
 	timer5ClearOverflowCount();//clear timer0's overflow counter.
 	}
+	*/
 //***************************************
 
 
