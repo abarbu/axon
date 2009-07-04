@@ -85,5 +85,3 @@ void axon_DAQ_fast(void)
 		//uart2SendByte(m2);//even faster, but doesn't have carriage return
 		}
 	}
-
-

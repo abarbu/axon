@@ -19,10 +19,12 @@
 //
 //*****************************************************************************
 
+#include <stdbool.h>
+#include <inttypes.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-#include "global.h"
+#include "avrlibdefs.h"
 #include "a2d.h"
 
 // global variables
@@ -44,7 +46,7 @@ void a2dInit(void)
 
 	sbi(ADCSR, ADIE);				// enable ADC interrupts
 
-	a2dCompleteFlag = FALSE;		// clear conversion complete flag
+	a2dCompleteFlag = false;		// clear conversion complete flag
 	sei();							// turn on interrupts (if not already on)
 }
 
@@ -76,12 +78,12 @@ void a2dSetChannel(unsigned char ch)
 // start a conversion on the current a2d input channel
 void a2dStartConvert(void)
 {
-	sbi(ADCSR, ADIF);	// clear hardware "conversion complete" flag 
+	sbi(ADCSR, ADIF);	// clear hardware "conversion complete" flag
 	sbi(ADCSR, ADSC);	// start conversion
 }
 
-// return TRUE if conversion is complete
-u08 a2dIsComplete(void)
+// return true if conversion is complete
+uint8_t a2dIsComplete(void)
 {
 	return bit_is_set(ADCSR, ADSC);
 }
@@ -90,7 +92,7 @@ u08 a2dIsComplete(void)
 // starts conversion, waits until conversion is done, and returns result
 unsigned short a2dConvert10bit(unsigned char ch)
 {
-	a2dCompleteFlag = FALSE;				// clear conversion complete flag
+	a2dCompleteFlag = false;				// clear conversion complete flag
 
 if (ch >= 8)
     ADCSRB |= _BV(MUX5);
@@ -100,7 +102,7 @@ else
    outb(ADMUX, (inb(ADMUX) & ~7) | (ch & 7));   // set channel
 
 	//outb(ADMUX, (inb(ADMUX) & ~ADC_MUX_MASK) | (ch & ADC_MUX_MASK));	// set channel
-	sbi(ADCSR, ADIF);						// clear hardware "conversion complete" flag 
+	sbi(ADCSR, ADIF);						// clear hardware "conversion complete" flag
 	sbi(ADCSR, ADSC);						// start conversion
 	//while(!a2dCompleteFlag);				// wait until conversion complete
 	//while( bit_is_clear(ADCSR, ADIF) );		// wait until conversion complete
@@ -123,6 +125,5 @@ unsigned char a2dConvert8bit(unsigned char ch)
 SIGNAL(SIG_ADC)
 {
 	// set the a2d conversion flag to indicate "complete"
-	a2dCompleteFlag = TRUE;
+	a2dCompleteFlag = true;
 }
-

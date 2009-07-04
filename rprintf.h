@@ -84,7 +84,7 @@ void rprintfStrLen(char str[], unsigned int start, unsigned int len);
 /// program rom, but merely reads it assuming you stored it properly.
 void rprintfProgStr(const prog_char str[]);
 
-//! Using the function rprintfProgStrM(...) automatically causes 
+//! Using the function rprintfProgStrM(...) automatically causes
 /// your string to be stored in ROM, thereby not wasting precious RAM.
 /// Example usage:
 /// \code
@@ -121,7 +121,7 @@ void rprintfNum(char base, char numDigits, char isSigned, char padchar, long n);
 	void rprintfFloat(char numDigits, double x);
 #endif
 
-// NOTE: Below you'll see the function prototypes of rprintf1RamRom and 
+// NOTE: Below you'll see the function prototypes of rprintf1RamRom and
 // rprintf2RamRom.  rprintf1RamRom and rprintf2RamRom are both reduced versions
 // of the regular C printf() command.  However, they are modified to be able
 // to read their text/format strings from RAM or ROM in the Atmel microprocessors.

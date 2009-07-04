@@ -19,9 +19,13 @@
 
 /****************************************************************************
 *   Version Notes
-*	
+*
 *   1.0   1/2/2009    Initial release
 ****************************************************************************/
+
+#define MIN(a,b)			((a<b)?(a):(b))
+#define MAX(a,b)			((a>b)?(a):(b))
+#define ABS(x)				((x>0)?(x):(-x))
 
 //#define avrCamDebug 			1				// Turn on debug output
 #define avrCamShowInitStatus	1				// Display init status and version info
@@ -63,7 +67,7 @@ struct {										// Structure to hold blob data
 struct {										// Structure to hold meta data about blobs
 	uint8_t		cnt;								// How many blobs are valid
 	uint8_t		largest;							// Which blob is the largest
-} avrCamBlobInfo;	
+} avrCamBlobInfo;
 
 #define avrCamMaxColorMaps		8				// Max number of color map entries the camera supports
 struct _avrCamColorMap {						// Structure to hold color map entry
@@ -144,7 +148,7 @@ int16_t avrCamGetLine(char chStart, char chEnd, uint8_t minLen, uint8_t maxLen) 
 #ifdef avrCamDebug
 	rprintfInit(avrCamSTDOUTSendByte);
 #endif
-	
+
 	if (chStart) {												// Do we need to look for the start of the line?
 		inLine=0;
 	} else {
@@ -229,7 +233,7 @@ uint8_t avrCamSendCmd( char cmd[]) {
 			rprintf("Error: Unknown response\n");
 #endif
 
-			return 0;					
+			return 0;
 		}
 	} else {								// GetLine had an error
 
@@ -394,7 +398,7 @@ uint8_t avrCamGetTrackLine (void) {
 					size=avrCamBlob[i].size;
 					avrCamBlobInfo.largest=i;
 				}
-			}			
+			}
 			return avrCamBlobInfo.cnt;								// Return number of valid blobs
 		} else {
 			return 0;
@@ -416,7 +420,7 @@ uint8_t avrCamSetCameraReg(uint8_t reg, uint8_t val) {
 	rprintfInit(avrCamSendByte);	// Use Camera UART
 	rprintf("CR %d %d",reg,val);	// Send command
 	return avrCamSendCmd(NULL);		// Send null command to let that routing look for the return codes
-	
+
 }
 
 char *avrCamVersion(void) {
@@ -529,7 +533,7 @@ void avrCamInit(void) {
 		UCSR1C=0x06;								// UART1 = 8,1,n
 		UCSR1A=0x12;								// 15,200 using double clock speed
 		UBRR1L=16;									// 15,200 using double clock speed
-	} else if (avrCamUART==2) {	
+	} else if (avrCamUART==2) {
 		UCSR2C=0x06;								// UART2 = 8,1,n
 		UCSR2A=0x12;								// 15,200 using double clock speed
 		UBRR2L=16;									// 15,200 using double clock speed

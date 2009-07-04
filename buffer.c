@@ -15,9 +15,10 @@
 //
 //*****************************************************************************
 
+#include <avr/io.h>
+
+#include "avrlibdefs.h"
 #include "buffer.h"
-#include "global.h"
-#include "avr/io.h"
 
 #ifndef CRITICAL_SECTION_START
 #define CRITICAL_SECTION_START	unsigned char _sreg = SREG; cli()
@@ -146,4 +147,3 @@ void bufferFlush(cBuffer* buffer)
 	// end critical section
 	CRITICAL_SECTION_END;
 }
-

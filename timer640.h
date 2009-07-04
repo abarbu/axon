@@ -32,7 +32,7 @@
 #define TIMER4_MAX      65535
 #define TIMER5_MAX      65535
 
-typedef enum TimerInterrupt { 
+typedef enum TimerInterrupt {
   TIMER0_COMPA_interrupt = 0, // Timer/Counter0 Compare Match A
   TIMER0_COMPB_interrupt,     // Timer/Counter0 Compare Match B
   TIMER0_OVF_interrupt,       // Timer/Counter0 Overflow
@@ -75,7 +75,7 @@ uint16_t get_timer3_prescaler(void);
 uint16_t get_timer4_prescaler(void);
 uint16_t get_timer5_prescaler(void);
 
-/* 8-bit sync timer 
+/* 8-bit sync timer
  */
 void init_timer0(const uint8_t prescaler);
 
@@ -83,7 +83,7 @@ void init_timer0(const uint8_t prescaler);
  */
 void init_timer1(const uint8_t prescaler);
 
-/* 8-bit async timer 
+/* 8-bit async timer
  */
 void init_timer2(const uint8_t prescaler);
 
@@ -106,19 +106,19 @@ void reset_timer3(void);
 void reset_timer4(void);
 void reset_timer5(void);
 
-const uint8_t get_timer0_counter(void);
-const uint16_t get_timer1_counter(void);
-const uint8_t get_timer2_counter(void);
-const uint16_t get_timer3_counter(void);
-const uint16_t get_timer4_counter(void);
-const uint16_t get_timer5_counter(void);
+uint8_t get_timer0_counter(void);
+uint16_t get_timer1_counter(void);
+uint8_t get_timer2_counter(void);
+uint16_t get_timer3_counter(void);
+uint16_t get_timer4_counter(void);
+uint16_t get_timer5_counter(void);
 
-const uint32_t get_timer0_overflow(void);
-const uint32_t get_timer1_overflow(void);
-const uint32_t get_timer2_overflow(void);
-const uint32_t get_timer3_overflow(void);
-const uint32_t get_timer4_overflow(void);
-const uint32_t get_timer5_overflow(void);
+uint32_t get_timer0_overflow(void);
+uint32_t get_timer1_overflow(void);
+uint32_t get_timer2_overflow(void);
+uint32_t get_timer3_overflow(void);
+uint32_t get_timer4_overflow(void);
+uint32_t get_timer5_overflow(void);
 
 void timer_attach(TimerInterrupt_t interrupt, void (*user_func)(void) );
 void timer_detach(TimerInterrupt_t interrupt);

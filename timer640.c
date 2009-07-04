@@ -3,7 +3,7 @@
 #include <avr/pgmspace.h>
 #include <avr/sleep.h>
 #include <stdlib.h>
-#include "global.h"
+#include "avrlibdefs.h"
 #include "rprintf.h"
 
 #define TIMER_PRESCALE_MASK 0x07
@@ -25,7 +25,7 @@ volatile uint32_t timer5_ovrflow_cnt;
 volatile uint32_t timer_sleep_cnt;
 
 typedef void (*void_func_ptr)(void);
-volatile static void_func_ptr TimerIntFunc[TIMER_MAX_ENUM];
+static volatile void_func_ptr TimerIntFunc[TIMER_MAX_ENUM];
 
 uint16_t prescaler_hex_to_value(uint8_t hex)
 {
@@ -68,52 +68,52 @@ uint16_t get_timer5_prescaler(void)
   return prescaler_hex_to_value(TCCR5B);
 }
 
-const uint32_t get_timer0_overflow(void)
+uint32_t get_timer0_overflow(void)
 {
     return timer0_ovrflow_cnt;
 }
-const uint32_t get_timer1_overflow(void)
+uint32_t get_timer1_overflow(void)
 {
     return timer1_ovrflow_cnt;
 }
-const uint32_t get_timer2_overflow(void)
+uint32_t get_timer2_overflow(void)
 {
     return timer2_ovrflow_cnt;
 }
-const uint32_t get_timer3_overflow(void)
+uint32_t get_timer3_overflow(void)
 {
     return timer3_ovrflow_cnt;
 }
-const uint32_t get_timer4_overflow(void)
+uint32_t get_timer4_overflow(void)
 {
     return timer4_ovrflow_cnt;
 }
-const uint32_t get_timer5_overflow(void)
+uint32_t get_timer5_overflow(void)
 {
     return timer5_ovrflow_cnt;
 }
 
-const uint8_t get_timer0_counter(void)
+uint8_t get_timer0_counter(void)
 {
     return TCNT0;
 }
-const uint16_t get_timer1_counter(void)
+uint16_t get_timer1_counter(void)
 {
     return TCNT1;
 }
-const uint8_t get_timer2_counter(void)
+uint8_t get_timer2_counter(void)
 {
     return TCNT2;
 }
-const uint16_t get_timer3_counter(void)
+uint16_t get_timer3_counter(void)
 {
     return TCNT3;
 }
-const uint16_t get_timer4_counter(void)
+uint16_t get_timer4_counter(void)
 {
     return TCNT4;
 }
-const uint16_t get_timer5_counter(void)
+uint16_t get_timer5_counter(void)
 {
     return TCNT5;
 }
@@ -143,14 +143,14 @@ void reset_timer5(void)
     TCNT5 = timer5_ovrflow_cnt = 0;
 }
 
-void delay_us(unsigned short time_us) 
+void delay_us(unsigned short time_us)
 {
 	unsigned short delay_loops;
 	register unsigned short i;
 
-	delay_loops = (time_us+3)/5*CYCLES_PER_US; // +3 for rounding up (dirty) 
+	delay_loops = (time_us+3)/5*CYCLES_PER_US; // +3 for rounding up (dirty)
 
-	// one loop takes 5 cpu cycles 
+	// one loop takes 5 cpu cycles
 	for (i=0; i < delay_loops; i++) {};
 }
 
@@ -229,7 +229,7 @@ void sleep(uint16_t time_ms)
   // loop until time expires
   while( ((timer_sleep_cnt<<8) | (TCNT0)) < (pause+timerThres) )
   {
-    if( timer_sleep_cnt < (pause>>8));
+    if( timer_sleep_cnt < (pause>>8))
     {
 //      rprintf("putting axon to sleep...\n");
       // save power by idling the processor
@@ -240,33 +240,33 @@ void sleep(uint16_t time_ms)
   }
 }
 
-ISR(TIMER0_OVF_vect) 
+ISR(TIMER0_OVF_vect)
 {
   timer0_ovrflow_cnt++;
   timer_sleep_cnt++;
   RUN_USER_DEFINE_INTERRUPT(TIMER0_OVF_interrupt);
 }
-ISR(TIMER1_OVF_vect) 
+ISR(TIMER1_OVF_vect)
 {
   timer1_ovrflow_cnt++;
   RUN_USER_DEFINE_INTERRUPT(TIMER1_OVF_interrupt);
 }
-ISR(TIMER2_OVF_vect) 
+ISR(TIMER2_OVF_vect)
 {
   timer2_ovrflow_cnt++;
   RUN_USER_DEFINE_INTERRUPT(TIMER2_OVF_interrupt);
 }
-ISR(TIMER3_OVF_vect) 
+ISR(TIMER3_OVF_vect)
 {
   timer3_ovrflow_cnt++;
   RUN_USER_DEFINE_INTERRUPT(TIMER3_OVF_interrupt);
 }
-ISR(TIMER4_OVF_vect) 
+ISR(TIMER4_OVF_vect)
 {
   timer4_ovrflow_cnt++;
   RUN_USER_DEFINE_INTERRUPT(TIMER4_OVF_interrupt);
 }
-ISR(TIMER5_OVF_vect) 
+ISR(TIMER5_OVF_vect)
 {
   timer5_ovrflow_cnt++;
   RUN_USER_DEFINE_INTERRUPT(TIMER5_OVF_interrupt);
@@ -335,24 +335,24 @@ ISR(TIMER4_COMPC_vect)
 {
   RUN_USER_DEFINE_INTERRUPT(TIMER4_COMPC_interrupt);
 }
-ISR(TIMER5_CAPT_vect)
-{
-  RUN_USER_DEFINE_INTERRUPT(TIMER5_CAPT_interrupt);
-}
-ISR(TIMER5_COMPA_vect)
-{
-  RUN_USER_DEFINE_INTERRUPT(TIMER5_COMPA_interrupt);
-}
-ISR(TIMER5_COMPB_vect)
-{
-  RUN_USER_DEFINE_INTERRUPT(TIMER5_COMPB_interrupt);
-}
-ISR(TIMER5_COMPC_vect)
-{
-  RUN_USER_DEFINE_INTERRUPT(TIMER5_COMPC_interrupt);
-}
+/* ISR(TIMER5_CAPT_vect) */
+/* { */
+/*   RUN_USER_DEFINE_INTERRUPT(TIMER5_CAPT_interrupt); */
+/* } */
+/* ISR(TIMER5_COMPA_vect) */
+/* { */
+/*   RUN_USER_DEFINE_INTERRUPT(TIMER5_COMPA_interrupt); */
+/* } */
+/* ISR(TIMER5_COMPB_vect) */
+/* { */
+/*   RUN_USER_DEFINE_INTERRUPT(TIMER5_COMPB_interrupt); */
+/* } */
+/* ISR(TIMER5_COMPC_vect) */
+/* { */
+/*   RUN_USER_DEFINE_INTERRUPT(TIMER5_COMPC_interrupt); */
+/* } */
 
-ISR(BAD_vect)
-{
-  rprintf("BAD_vect called!");
-}
+/* ISR(BAD_vect) */
+/* { */
+/*   rprintf("BAD_vect called!"); */
+/* } */

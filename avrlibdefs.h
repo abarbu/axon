@@ -23,7 +23,6 @@
 #define AVRLIBDEFS_H
 
 // Code compatibility to new AVR-libc
-// outb(), inb(), inw(), outw(), BV(), sbi(), cbi(), sei(), cli()
 #ifndef outb
 	#define	outb(addr, data)	addr = (data)
 #endif
@@ -66,18 +65,16 @@
 // use this for packed structures
 // (this is seldom necessary on an 8-bit architecture like AVR,
 //  but can assist in code portability to AVR)
-#define GNUC_PACKED __attribute__((packed)) 
+#define GNUC_PACKED __attribute__((packed))
 
 // port address helpers
 #define DDR(x) ((x)-1)    // address of data direction register of port x
 #define PIN(x) ((x)-2)    // address of input register of port x
 
-// MIN/MAX/ABS macros
-#define MIN(a,b)			((a<b)?(a):(b))
-#define MAX(a,b)			((a>b)?(a):(b))
-#define ABS(x)				((x>0)?(x):(-x))
+// CPU clock speed
+#define CYCLES_PER_US ((F_CPU+500000)/1000000) 	// cpu cycles per microsecond
 
-// constants
-#define PI		3.14159265359
+// Enable this to get a fancy rprintf
+// #define RPRINTF_COMPLEX
 
 #endif

@@ -70,7 +70,7 @@ void spiInit()
 	sbi(DDRB, 5);	// set MOSI as output
 	sbi(DDRB, 4);	// SS must be output for Master mode to work
 #endif
-	
+
 	// setup SPI interface :
 	// master mode
 	sbi(SPCR, MSTR);
@@ -86,13 +86,13 @@ void spiInit()
 	cbi(SPCR,DORD);
 	// enable SPI
 	sbi(SPCR, SPE);
-		
-	
+
+
 	// some other possible configs
 	//outp((1<<MSTR)|(1<<SPE)|(1<<SPR0), SPCR );
 	//outp((1<<CPHA)|(1<<CPOL)|(1<<MSTR)|(1<<SPE)|(1<<SPR0)|(1<<SPR1), SPCR );
 	//outp((1<<CPHA)|(1<<MSTR)|(1<<SPE)|(1<<SPR0), SPCR );
-	
+
 	// clear status
 	inb(SPSR);
 	spiTransferComplete = TRUE;

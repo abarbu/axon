@@ -28,7 +28,7 @@ void test_oscope(void)
 	servo(PORTC,7,360);
 
 	servo(PORTJ,6,360);
-	
+
 	servo(PORTA,0,360);
 	servo(PORTA,1,360);
 	servo(PORTA,2,360);
@@ -37,7 +37,7 @@ void test_oscope(void)
 	servo(PORTA,5,360);
 	servo(PORTA,6,360);
 	servo(PORTA,7,360);
-	
+
 	//left row
 	servo(PORTE,2,360);
 	servo(PORTE,3,360);
@@ -45,7 +45,7 @@ void test_oscope(void)
 	servo(PORTE,5,360);
 	servo(PORTE,6,360);
 	servo(PORTE,7,360);
-	
+
 	servo(PORTH,2,360);
 	servo(PORTH,3,360);
 	servo(PORTH,4,360);

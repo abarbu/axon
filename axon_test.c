@@ -65,7 +65,7 @@ void test(void)
 		PORT_ON(PORTK,7);
 
 
-	
+
 		delay_ms(800);//delay
 
 

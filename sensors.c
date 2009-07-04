@@ -107,10 +107,12 @@ int sonar_MaxSonar(int value)
 //uses timer0
 int sonar_Ping()
 {
-#define PINGPIN    3          // assign a pin to the Ping Sensor
-#define DDR        DDRA
-#define PORT       PORTA
-#define PIN        PINA
+#define PINGPIN    0          // assign a pin to the Ping Sensor
+#undef DDR
+#undef PIN
+#define DDR        DDRC
+#define PORT       PORTC
+#define PIN        PINC
 
   PORT_ON(DDR, PINGPIN);   // Switch PingPin to OUPUT
   // ------Trigger Pulse--------------

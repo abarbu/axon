@@ -33,23 +33,23 @@
 
 // I2C state and address variables
 static volatile eI2cStateType I2cState;
-static u08 I2cDeviceAddrRW;
+static uint8_t I2cDeviceAddrRW;
 // send/transmit buffer (outgoing data)
-static u08 I2cSendData[I2C_SEND_DATA_BUFFER_SIZE];
-static u08 I2cSendDataIndex;
-static u08 I2cSendDataLength;
+static uint8_t I2cSendData[I2C_SEND_DATA_BUFFER_SIZE];
+static uint8_t I2cSendDataIndex;
+static uint8_t I2cSendDataLength;
 // receive buffer (incoming data)
-static u08 I2cReceiveData[I2C_RECEIVE_DATA_BUFFER_SIZE];
-static u08 I2cReceiveDataIndex;
-static u08 I2cReceiveDataLength;
+static uint8_t I2cReceiveData[I2C_RECEIVE_DATA_BUFFER_SIZE];
+static uint8_t I2cReceiveDataIndex;
+static uint8_t I2cReceiveDataLength;
 
 // function pointer to i2c receive routine
 //! I2cSlaveReceive is called when this processor
 // is addressed as a slave for writing
-static void (*i2cSlaveReceive)(u08 receiveDataLength, u08* recieveData);
+static void (*i2cSlaveReceive)(uint8_t receiveDataLength, uint8_t* recieveData);
 //! I2cSlaveTransmit is called when this processor
 // is addressed as a slave for reading
-static u08 (*i2cSlaveTransmit)(u08 transmitDataLengthMax, u08* transmitData);
+static uint8_t (*i2cSlaveTransmit)(uint8_t transmitDataLengthMax, uint8_t* transmitData);
 
 // functions
 void i2cInit(void)
@@ -77,7 +77,7 @@ void i2cInit(void)
 
 void i2cSetBitrate(u16 bitrateKHz)
 {
-	u08 bitrate_div;
+	uint8_t bitrate_div;
 	// set i2c bitrate
 	// SCL freq = F_CPU/(16+2*TWBR))
 	#ifdef TWPS0
@@ -87,25 +87,25 @@ void i2cSetBitrate(u16 bitrateKHz)
 		cbi(TWSR, TWPS0);
 		cbi(TWSR, TWPS1);
 	#endif
-	// calculate bitrate division	
+	// calculate bitrate division
 	bitrate_div = ((F_CPU/1000l)/bitrateKHz);
 	if(bitrate_div >= 16)
 		bitrate_div = (bitrate_div-16)/2;
 	outb(TWBR, bitrate_div);
 }
 
-void i2cSetLocalDeviceAddr(u08 deviceAddr, u08 genCallEn)
+void i2cSetLocalDeviceAddr(uint8_t deviceAddr, uint8_t genCallEn)
 {
 	// set local device address (used in slave mode only)
 	outb(TWAR, ((deviceAddr&0xFE) | (genCallEn?1:0)) );
 }
 
-void i2cSetSlaveReceiveHandler(void (*i2cSlaveRx_func)(u08 receiveDataLength, u08* recieveData))
+void i2cSetSlaveReceiveHandler(void (*i2cSlaveRx_func)(uint8_t receiveDataLength, uint8_t* recieveData))
 {
 	i2cSlaveReceive = i2cSlaveRx_func;
 }
 
-void i2cSetSlaveTransmitHandler(u08 (*i2cSlaveTx_func)(u08 transmitDataLengthMax, u08* transmitData))
+void i2cSetSlaveTransmitHandler(uint8_t (*i2cSlaveTx_func)(uint8_t transmitDataLengthMax, uint8_t* transmitData))
 {
 	i2cSlaveTransmit = i2cSlaveTx_func;
 }
@@ -129,7 +129,7 @@ inline void i2cWaitForComplete(void)
 	while( !(inb(TWCR) & BV(TWINT)) );
 }
 
-inline void i2cSendByte(u08 data)
+inline void i2cSendByte(uint8_t data)
 {
 	// save data to the TWDR
 	outb(TWDR, data);
@@ -137,7 +137,7 @@ inline void i2cSendByte(u08 data)
 	outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT));
 }
 
-inline void i2cReceiveByte(u08 ackFlag)
+inline void i2cReceiveByte(uint8_t ackFlag)
 {
 	// begin receive over i2c
 	if( ackFlag )
@@ -152,21 +152,21 @@ inline void i2cReceiveByte(u08 ackFlag)
 	}
 }
 
-inline u08 i2cGetReceivedByte(void)
+inline uint8_t i2cGetReceivedByte(void)
 {
 	// retieve received data byte from i2c TWDR
 	return( inb(TWDR) );
 }
 
-inline u08 i2cGetStatus(void)
+inline uint8_t i2cGetStatus(void)
 {
 	// retieve current i2c status from i2c TWSR
 	return( inb(TWSR) );
 }
 
-void i2cMasterSend(u08 deviceAddr, u08 length, u08* data)
+void i2cMasterSend(uint8_t deviceAddr, uint8_t length, uint8_t* data)
 {
-	u08 i;
+	uint8_t i;
 	// wait for interface to be ready
 	while(I2cState);
 	// set state
@@ -181,9 +181,9 @@ void i2cMasterSend(u08 deviceAddr, u08 length, u08* data)
 	i2cSendStart();
 }
 
-void i2cMasterReceive(u08 deviceAddr, u08 length, u08* data)
+void i2cMasterReceive(uint8_t deviceAddr, uint8_t length, uint8_t* data)
 {
-	u08 i;
+	uint8_t i;
 	// wait for interface to be ready
 	while(I2cState);
 	// set state
@@ -201,9 +201,9 @@ void i2cMasterReceive(u08 deviceAddr, u08 length, u08* data)
 		*data++ = I2cReceiveData[i];
 }
 
-u08 i2cMasterSendNI(u08 deviceAddr, u08 length, u08* data)
+uint8_t i2cMasterSendNI(uint8_t deviceAddr, uint8_t length, uint8_t* data)
 {
-	u08 retval = I2C_OK;
+	uint8_t retval = I2C_OK;
 
 	// disable TWI interrupt
 	cbi(TWCR, TWIE);
@@ -246,9 +246,9 @@ u08 i2cMasterSendNI(u08 deviceAddr, u08 length, u08* data)
 	return retval;
 }
 
-u08 i2cMasterReceiveNI(u08 deviceAddr, u08 length, u08 *data)
+uint8_t i2cMasterReceiveNI(uint8_t deviceAddr, uint8_t length, uint8_t *data)
 {
-	u08 retval = I2C_OK;
+	uint8_t retval = I2C_OK;
 
 	// disable TWI interrupt
 	cbi(TWCR, TWIE);
@@ -297,7 +297,7 @@ u08 i2cMasterReceiveNI(u08 deviceAddr, u08 length, u08 *data)
 	return retval;
 }
 /*
-void i2cMasterTransferNI(u08 deviceAddr, u08 sendlength, u08* senddata, u08 receivelength, u08* receivedata)
+void i2cMasterTransferNI(uint8_t deviceAddr, uint8_t sendlength, uint8_t* senddata, uint8_t receivelength, uint8_t* receivedata)
 {
 	// disable TWI interrupt
 	cbi(TWCR, TWIE);
@@ -312,7 +312,7 @@ void i2cMasterTransferNI(u08 deviceAddr, u08 sendlength, u08* senddata, u08 rece
 		// send device address with write
 		i2cSendByte( deviceAddr & 0xFE );
 		i2cWaitForComplete();
-		
+
 		// send data
 		while(sendlength)
 		{
@@ -348,7 +348,7 @@ void i2cMasterTransferNI(u08 deviceAddr, u08 sendlength, u08* senddata, u08 rece
 		i2cWaitForComplete();
 		*receivedata++ = i2cGetReceivedByte();
 	}
-	
+
 	// transmit stop condition
 	// leave with TWEA on for slave receiving
 	i2cSendStop();
@@ -363,7 +363,7 @@ void i2cMasterTransferNI(u08 deviceAddr, u08 sendlength, u08* senddata, u08 rece
 SIGNAL(SIG_2WIRE_SERIAL)
 {
 	// read status bits
-	u08 status = inb(TWSR) & TWSR_STATUS_MASK;
+	uint8_t status = inb(TWSR) & TWSR_STATUS_MASK;
 
 	switch(status)
 	{
@@ -378,7 +378,7 @@ SIGNAL(SIG_2WIRE_SERIAL)
 		// send device address
 		i2cSendByte(I2cDeviceAddrRW);
 		break;
-	
+
 	// Master Transmitter & Receiver status codes
 	case TW_MT_SLA_ACK:					// 0x18: Slave address acknowledged
 	case TW_MT_DATA_ACK:				// 0x28: Data acknowledged

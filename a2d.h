@@ -79,16 +79,19 @@
 
 #define ADC_CH_122V				0x1E	///< 1.22V voltage reference
 #define ADC_CH_AGND				0x1F	///< AGND
-// these channels supported only in ATmega128
+
+#ifdef __AVR_ATmega128__
 // differential with gain
-/*#define ADC_CH_0_0_DIFF10X		0x08
+#define ADC_CH_0_0_DIFF10X		0x08
 #define ADC_CH_1_0_DIFF10X		0x09
 #define ADC_CH_0_0_DIFF200X		0x0A
 #define ADC_CH_1_0_DIFF200X		0x0B
 #define ADC_CH_2_2_DIFF10X		0x0C
 #define ADC_CH_3_2_DIFF10X		0x0D
 #define ADC_CH_2_2_DIFF200X		0x0E
-#define ADC_CH_3_2_DIFF200X		0x0F*/
+#define ADC_CH_3_2_DIFF200X		0x0F
+#endif
+
 // differential
 #define ADC_CH_0_1_DIFF1X		0x10
 #define ADC_CH_1_1_DIFF1X		0x11
@@ -143,7 +146,7 @@ void a2dSetChannel(unsigned char ch);
 void a2dStartConvert(void);
 
 //! return TRUE if conversion is complete
-u08 a2dIsComplete(void);
+uint8_t a2dIsComplete(void);
 
 //! starts a conversion on A/D channel# ch,
 // returns the 10-bit value of the conversion when it is finished

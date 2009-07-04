@@ -30,7 +30,7 @@
 ///
 /// \par About UART operations
 ///		Most Atmel AVR-series processors contain one or more hardware UARTs
-///		(aka, serial ports).  UART serial ports can communicate with other 
+///		(aka, serial ports).  UART serial ports can communicate with other
 ///		serial ports of the same type, like those used on PCs.  In general,
 ///		UARTs are used to communicate with devices that are RS-232 compatible
 ///		(RS-232 is a certain kind of serial port).
@@ -50,7 +50,7 @@
 /// rprintf("Hello UART1\r\n");	// send "hello world" message via UART1
 /// \endcode
 ///
-/// \warning The CPU frequency (F_CPU) must be set correctly in \c global.h
+/// \warning The CPU frequency (F_CPU) must be set correctly in the \c makefile
 ///		for the UART library to calculate correct baud rates.  Furthermore,
 ///		certain CPU frequencies will not produce exact baud rates due to
 ///		integer frequency division round-off.  See your AVR processor's
@@ -68,9 +68,6 @@
 
 #ifndef UART4_H
 #define UART4_H
-
-#include "global.h"
-#include "buffer.h"
 
 //! Default uart baud rate.
 /// This is the default speed after a uartInit() command,
@@ -171,30 +168,30 @@ void uart3InitBuffers(void);
 
 //! Redirects received data to a user function.
 ///
-void uartSetRxHandler(u08 nUart, void (*rx_func)(unsigned char c));
+void uartSetRxHandler(uint8_t nUart, void (*rx_func)(unsigned char c));
 
 //! Sets the uart baud rate.
 /// Argument should be in bits-per-second, like \c uartSetBaudRate(9600);
-void uartSetBaudRate(u08 nUart, u32 baudrate);
+void uartSetBaudRate(uint8_t nUart, uint32_t baudrate);
 
 //! Returns pointer to the receive buffer structure.
 ///
-cBuffer* uartGetRxBuffer(u08 nUart);
+cBuffer* uartGetRxBuffer(uint8_t nUart);
 
 //! Returns pointer to the transmit buffer structure.
 ///
-cBuffer* uartGetTxBuffer(u08 nUart);
+cBuffer* uartGetTxBuffer(uint8_t nUart);
 
 //! Sends a single byte over the uart.
 ///
-void uartSendByte(u08 nUart, u08 data);
+void uartSendByte(uint8_t nUart, uint8_t data);
 
 //! SendByte commands with the UART number hardcoded
 /// Use these with printfInit() - example: \c printfInit(uart0SendByte);
-void uart0SendByte(u08 data);
-void uart1SendByte(u08 data);
-void uart2SendByte(u08 data);
-void uart3SendByte(u08 data);
+void uart0SendByte(uint8_t data);
+void uart1SendByte(uint8_t data);
+void uart2SendByte(uint8_t data);
+void uart3SendByte(uint8_t data);
 
 //! Gets a single byte from the uart receive buffer.
 /// Returns the byte, or -1 if no byte is available (getchar-style).
@@ -211,38 +208,37 @@ int uart3GetByte(void);
 /// char myReceivedByte;
 /// uartReceiveByte(0, &myReceivedByte );
 /// \endcode
-u08 uartReceiveByte(u08 nUart, u08* data);
+uint8_t uartReceiveByte(uint8_t nUart, uint8_t* data);
 
 //! Returns TRUE/FALSE if receive buffer is empty/not-empty.
 ///
-u08 uartReceiveBufferIsEmpty(u08 nUart);
+uint8_t uartReceiveBufferIsEmpty(uint8_t nUart);
 
 //! Flushes (deletes) all data from receive buffer.
 ///
-void uartFlushReceiveBuffer(u08 nUart);
+void uartFlushReceiveBuffer(uint8_t nUart);
 
 //! Add byte to end of uart Tx buffer.
 ///
-void uartAddToTxBuffer(u08 nUart, u08 data);
+void uartAddToTxBuffer(uint8_t nUart, uint8_t data);
 
 //! AddToTxBuffer commands with the UART number hardcoded
 /// Use this with printfInit() - example: \c printfInit(uart0AddToTxBuffer);
-void uart0AddToTxBuffer(u08 data);
-void uart1AddToTxBuffer(u08 data);
-void uart2AddToTxBuffer(u08 data);
-void uart3AddToTxBuffer(u08 data);
+void uart0AddToTxBuffer(uint8_t data);
+void uart1AddToTxBuffer(uint8_t data);
+void uart2AddToTxBuffer(uint8_t data);
+void uart3AddToTxBuffer(uint8_t data);
 
 //! Begins transmission of the transmit buffer under interrupt control.
 ///
-void uartSendTxBuffer(u08 nUart);
+void uartSendTxBuffer(uint8_t nUart);
 
 //! sends a buffer of length nBytes via the uart using interrupt control.
 ///
-u08 uartSendBuffer(u08 nUart, char *buffer, u16 nBytes);
+uint8_t uartSendBuffer(uint8_t nUart, char *buffer, uint16_t nBytes);
 
 //! interrupt service handlers
-void uartTransmitService(u08 nUart);
-void uartReceiveService(u08 nUart);
+void uartTransmitService(uint8_t nUart);
+void uartReceiveService(uint8_t nUart);
 
 #endif
-

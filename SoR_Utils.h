@@ -21,15 +21,14 @@
 //#include "libm.a"			// required with math.h
 #include <string.h>			// allow strings to be used
 
-//AVRlib includes
-#include "global.h"		// include global settings
-#include "uart4.h"		// include uart function library, includes buffer.h
-#include "rprintf.h"	// include printf function library
-//#include "timerx8.h"	// include timer function library (timing, PWM, etc)
-#include "timer640.h"	// include timer function library (timing, PWM, etc)
-#include "a2d.h"		// include A/D converter function library
-#include "i2c.h"		// include i2c support
-#include "spi.h"		// include spi support
+#include "avrlibdefs.h"
+#include "buffer.h"
+#include "uart4.h"
+#include "rprintf.h"
+#include "timer640.h"
+#include "a2d.h"
+#include "i2c.h"
+#include "spi.h"
 
 //define port functions; example: PORT_ON( PORTD, 6);
 #define PORT_ON( port_letter, number )			port_letter |= (1<<number)
@@ -41,7 +40,7 @@
 #define PORT_IS_OFF( port_letter, number )		!( port_letter & (1<<number) )
 
 //define the servo function macro
-#define servo(port,number,position)   (PORT_ON(port,number), delay_cycles(position), PORT_OFF(port,number))
+// #define servo(port,number,position)   (PORT_ON(port,number), delay_cycles(position), PORT_OFF(port,number))
 
 
 //************CONFIGURE PORTS************
@@ -70,46 +69,46 @@ void configure_ports(void)
 	//useful for servos, PWM, LED's, UART, interrupts, timers
 	DDRA = 0b11111111;  //configure ports for output
 	//       ||||||||
-	//       |||||||\___0: 
-	//       ||||||\____1: 
-	//       |||||\_____2: 
-	//       ||||\______3: 
-	//       |||\_______4: 
-	//       ||\________5: 
-	//       |\_________6: 
-	//       \__________7: 
+	//       |||||||\___0:
+	//       ||||||\____1:
+	//       |||||\_____2:
+	//       ||||\______3:
+	//       |||\_______4:
+	//       ||\________5:
+	//       |\_________6:
+	//       \__________7:
 	//PORTB reserved for programmer (use programmer pins if you know what you are doing)
 	DDRB = _BV (PB6);	//PB6 is LED, hold low to turn it on
 	DDRC = 0b11111111;  //configure ports for output
 	//       ||||||||
-	//       |||||||\___0: 
-	//       ||||||\____1: 
-	//       |||||\_____2: 
-	//       ||||\______3: 
-	//       |||\_______4: 
-	//       ||\________5: 
-	//       |\_________6: 
-	//       \__________7: 
+	//       |||||||\___0:
+	//       ||||||\____1:
+	//       |||||\_____2:
+	//       ||||\______3:
+	//       |||\_______4:
+	//       ||\________5:
+	//       |\_________6:
+	//       \__________7:
 	DDRD = 0b11111011;  //configure ports for output
 	//       ||||||||
-	//       |||||||\___0: 
-	//       ||||||\____1: 
+	//       |||||||\___0:
+	//       ||||||\____1:
 	//       |||||\_____2: serial RXD1, input  -> 0
 	//       ||||\______3: serial TXD1, output -> 1
-	//       |||\_______4: 
-	//       ||\________5: 
-	//       |\_________6: 
+	//       |||\_______4:
+	//       ||\________5:
+	//       |\_________6:
 	//       \__________7: timer0
 	DDRE = 0b11111110;  //configure ports for output
 	//       ||||||||
 	//       |||||||\___0: serial RXD0, input  -> 0
 	//       ||||||\____1: serial TXD0, output -> 1
-	//       |||||\_____2: 
-	//       ||||\______3: 
-	//       |||\_______4: 
-	//       ||\________5: 
-	//       |\_________6: 
-	//       \__________7: 
+	//       |||||\_____2:
+	//       ||||\______3:
+	//       |||\_______4:
+	//       ||\________5:
+	//       |\_________6:
+	//       \__________7:
 	//cbi(PORTG, PG5);  // disable pull-up resistor for Axon v1e and earlier
 	sbi(PORTG, PG5);  // enable pull-up resistor for v1f and later
 	cbi(DDRG, PG5);	//PG5 is for the button, make a digital input
@@ -118,22 +117,22 @@ void configure_ports(void)
 	//       ||||||||
 	//       |||||||\___0: serial RXD2, input  -> 0
 	//       ||||||\____1: serial TXD2, output -> 1
-	//       |||||\_____2: 
-	//       ||||\______3: 
-	//       |||\_______4: 
-	//       ||\________5: 
-	//       |\_________6: 
-	//       \__________7: 
+	//       |||||\_____2:
+	//       ||||\______3:
+	//       |||\_______4:
+	//       ||\________5:
+	//       |\_________6:
+	//       \__________7:
 	DDRJ = 0b11111110;  //configure ports for output
 	//       ||||||||
 	//       |||||||\___0: serial RXD3, input  -> 0
 	//       ||||||\____1: serial TXD3, output -> 1
-	//       |||||\_____2: 
-	//       ||||\______3: 
-	//       |||\_______4: 
-	//       ||\________5: 
-	//       |\_________6: 
-	//       \__________7: 
+	//       |||||\_____2:
+	//       ||||\______3:
+	//       |||\_______4:
+	//       ||\________5:
+	//       |\_________6:
+	//       \__________7:
 	//PORTL has no headers
 	};
 //***************************************

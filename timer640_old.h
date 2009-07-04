@@ -44,7 +44,7 @@
 ///		timers.  Generally speaking, a timer is a hardware counter inside
 ///		the processor which counts at a rate related to the main CPU clock
 ///		frequency.  Because the counter value increasing (counting up) at
-///		a precise rate, we can use it as a timer to create or measure 
+///		a precise rate, we can use it as a timer to create or measure
 ///		precise delays, schedule events, or generate signals of a certain
 ///		frequency or pulse-width.
 /// \par
@@ -84,8 +84,6 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include "global.h"
-
 // constants/macros/typdefs
 
 // processor compatibility fixes
@@ -104,7 +102,7 @@
 // tics = rate at which the timer counts up
 // 8bitoverflow = rate at which the timer overflows 8bits (or reaches 256)
 // 16bit [overflow] = rate at which the timer overflows 16bits (65536)
-// 
+//
 // overflows can be used to generate periodic interrupts
 //
 // for 8MHz crystal
@@ -301,9 +299,9 @@ void timerDetach(u08 interruptNum);
 void timerPause(unsigned short pause_ms);
 
 // overflow counters
-void timer0ClearOverflowCount(void);	///< Clear timer0's overflow counter. 
+void timer0ClearOverflowCount(void);	///< Clear timer0's overflow counter.
 long timer0GetOverflowCount(void);		///< read timer0's overflow counter
-void timer1ClearOverflowCount(void);	///< Clear timer1's overflow counter. 
+void timer1ClearOverflowCount(void);	///< Clear timer1's overflow counter.
 long timer1GetOverflowCount(void);		///< read timer1's overflow counter
 #ifdef TCNT2	// support timer2 only if it exists
 void timer2ClearOverflowCount(void);	///< clear timer2's overflow counter
@@ -435,7 +433,7 @@ void PWM_timer3_Set_E4(u16 pwmDuty);
 void PWM_timer3_Set_E5(u16 pwmDuty);
 void PWM_timer4_Set_H3(u16 pwmDuty);
 void PWM_timer4_Set_H4(u16 pwmDuty);
-void PWM_timer4_Set_H5(u16 pwmDuty);	
+void PWM_timer4_Set_H5(u16 pwmDuty);
 
 
 

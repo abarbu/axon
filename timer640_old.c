@@ -35,13 +35,12 @@ Two 8-bit Timer/Counters with Separate Prescaler and Compare Mode
 Four 16-bit Timer/Counter with Separate Prescaler, Compare- and Capture Mode
 */
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <avr/pgmspace.h>
-#include <avr/sleep.h>
+/* #include <avr/io.h> */
+/* #include <avr/interrupt.h> */
+/* #include <avr/pgmspace.h> */
+/* #include <avr/sleep.h> */
 
-#include "global.h"
-#include "timer640.h"
+#include "timer640_old.h"
 #include "rprintf.h"
 
 // Program ROM constants
@@ -65,17 +64,17 @@ volatile unsigned long Timer5Reg0;
 typedef void (*voidFuncPtr)(void);
 volatile static voidFuncPtr TimerIntFunc[TIMER_NUM_INTERRUPTS];
 
-// delay for a minimum of <us> microseconds 
-// the time resolution is dependent on the time the loop takes 
-// e.g. with 4Mhz and 5 cycles per loop, the resolution is 1.25 us 
-void delay_us(unsigned short time_us) 
+// delay for a minimum of <us> microseconds
+// the time resolution is dependent on the time the loop takes
+// e.g. with 4Mhz and 5 cycles per loop, the resolution is 1.25 us
+void delay_us(unsigned short time_us)
 {
 	unsigned short delay_loops;
 	register unsigned short i;
 
-	delay_loops = (time_us+3)/5*CYCLES_PER_US; // +3 for rounding up (dirty) 
+	delay_loops = (time_us+3)/5*CYCLES_PER_US; // +3 for rounding up (dirty)
 
-	// one loop takes 5 cpu cycles 
+	// one loop takes 5 cpu cycles
 	for (i=0; i < delay_loops; i++) {};
 }
 void timerInit(void)
@@ -662,10 +661,10 @@ void timer1PWMInitICR(u16 topcount)
 	sbi(TCCR1A,WGM11);
 	sbi(TCCR1B,WGM12);
 	sbi(TCCR1B,WGM13);
-	
+
 	// set top count value
 	ICR1 = topcount;
-	
+
 	// clear output compare values
 	OCR1A = 0;
 	OCR1B = 0;
@@ -678,10 +677,10 @@ void timer3PWMInitICR(u16 topcount)
 	sbi(TCCR3A,WGM11);
 	sbi(TCCR3B,WGM12);
 	sbi(TCCR3B,WGM13);
-	
+
 	// set top count value
 	ICR3 = topcount;
-	
+
 	// clear output compare values
 	OCR3A = 0;
 	OCR3B = 0;
@@ -694,10 +693,10 @@ void timer4PWMInitICR(u16 topcount)
 	sbi(TCCR4A,WGM11);
 	sbi(TCCR4B,WGM12);
 	sbi(TCCR4B,WGM13);
-	
+
 	// set top count value
 	ICR4 = topcount;
-	
+
 	// clear output compare values
 	OCR4A = 0;
 	OCR4B = 0;
@@ -1018,10 +1017,10 @@ TIMER_INTERRUPT_HANDLER(SIG_INPUT_CAPTURE2)
 
  /* need this to capture any unexpected interrupts, this causes the reset.
   * http://www.gnu.org/savannah-checkouts/non-gnu/avr-libc/user-manual/group__avr__interrupts.html
-  * If an unexpected interrupt occurs (interrupt is enabled and no handler 
+  * If an unexpected interrupt occurs (interrupt is enabled and no handler
   * is installed, which usually indicates a bug), then the default action is
-  * to reset the device by jumping to the reset vector. You can override this 
-  * by supplying a function named BADISR_vect which should be defined with ISR() 
+  * to reset the device by jumping to the reset vector. You can override this
+  * by supplying a function named BADISR_vect which should be defined with ISR()
   * as such. */
 ISR(BADISR_vect)
 {
