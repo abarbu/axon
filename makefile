@@ -90,7 +90,7 @@ EXTRAINCDIRS =
 # 0 = turn off optimization. s = optimize for size.
 # (Note: 3 is not always the best optimization level. See avr-libc FAQ.)
 #  -O*:          optimization level
-OPT = -O3
+OPT = -Os
 
 # Compiler flags.
 #  -g*:          generate debugging information
@@ -202,7 +202,7 @@ OBJDUMP = avr-objdump
 SIZE = avr-size
 NM = avr-nm
 AVRDUDE = avrdude
-BOOTLOADER = axon-bootloader
+BOOTLOADER = ./axon-bootloader
 
 # Define Messages
 # English
