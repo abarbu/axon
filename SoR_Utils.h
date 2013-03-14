@@ -77,8 +77,21 @@ void configure_ports(void)
 	//       ||\________5:
 	//       |\_________6:
 	//       \__________7:
+#if 1   // Axon v2
+	DDRB = 0b11111111;  //configure ports for output
+	//       ||||||||
+	//       |||||||\___0:
+	//       ||||||\____1:
+	//       |||||\_____2:
+	//       ||||\______3:
+	//       |||\_______4:
+	//       ||\________5:
+	//       |\_________6:
+	//       \__________7:
+#else   // Axon v1
 	//PORTB reserved for programmer (use programmer pins if you know what you are doing)
 	DDRB = _BV (PB6);	//PB6 is LED, hold low to turn it on
+#endif
 	DDRC = 0b11111111;  //configure ports for output
 	//       ||||||||
 	//       |||||||\___0:
