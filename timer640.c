@@ -13,8 +13,8 @@
 // Program ROM constants
 // the prescale division values stored in order of timer control register index
 // STOP, CLK, CLK/8, CLK/64, CLK/256, CLK/1024
-uint16_t TimerPrescaleFactor[] PROGMEM = {0, 1, 8, 64, 256, 1024};
-uint16_t Timer2PrescaleFactor[] PROGMEM = {0, 1, 8, 32, 64, 128, 256, 1024};
+const uint16_t TimerPrescaleFactor[] PROGMEM = {0, 1, 8, 64, 256, 1024};
+const uint16_t Timer2PrescaleFactor[] PROGMEM = {0, 1, 8, 32, 64, 128, 256, 1024};
 
 volatile uint32_t timer0_ovrflow_cnt;
 volatile uint32_t timer1_ovrflow_cnt;

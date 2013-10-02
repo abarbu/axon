@@ -122,7 +122,7 @@ unsigned char a2dConvert8bit(unsigned char ch)
 }
 
 //! Interrupt handler for ADC complete interrupt.
-SIGNAL(SIG_ADC)
+ISR (ADC_vect)
 {
 	// set the a2d conversion flag to indicate "complete"
 	a2dCompleteFlag = true;

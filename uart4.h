@@ -126,7 +126,7 @@
 /// Value may be SIGNAL or INTERRUPT.
 /// \warning Do not change unless you know what you're doing.
 #ifndef UART_INTERRUPT_HANDLER
-#define UART_INTERRUPT_HANDLER	SIGNAL
+#define UART_INTERRUPT_HANDLER	ISR
 #endif
 
 // compatibility for the mega161

@@ -82,7 +82,7 @@ void rprintfStrLen(char str[], unsigned int start, unsigned int len);
 //! prints a string stored in program rom
 /// \note This function does not actually store your string in
 /// program rom, but merely reads it assuming you stored it properly.
-void rprintfProgStr(const prog_char str[]);
+void rprintfProgStr(const char str[]);
 
 //! Using the function rprintfProgStrM(...) automatically causes
 /// your string to be stored in ROM, thereby not wasting precious RAM.
